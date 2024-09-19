@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientRepositoryImpl implements ClientRepository {
-    private List<Client> clients = new ArrayList<>();
+    private final List<Client> clients = new ArrayList<>();
 
     @Override
     public void ajouterClient(Client client) {
@@ -28,5 +28,15 @@ public class ClientRepositoryImpl implements ClientRepository {
     @Override
     public List<Client> getAllClients() {
         return clients;
+    }
+
+    @Override
+    public boolean clientExiste(String nom) {
+        for (Client client : clients) {
+            if (client.getNom().equalsIgnoreCase(nom)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

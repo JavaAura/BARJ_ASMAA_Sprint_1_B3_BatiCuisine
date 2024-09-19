@@ -21,7 +21,7 @@ public class ConsoleUi {
             System.out.println("3. Quitter");
             System.out.print("Choisissez une option : ");
             int choix = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Consommer la nouvelle ligne
 
             switch (choix) {
                 case 1:

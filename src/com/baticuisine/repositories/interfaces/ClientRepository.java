@@ -8,4 +8,6 @@ public interface ClientRepository {
     void ajouterClient(Client client);
     Client rechercherClientParNom(String nom);
     List<Client> getAllClients();
+
+    boolean clientExiste(String nom);
 }
