@@ -11,8 +11,7 @@ public class Client {
     private List<Projet> projets;
 
     // Constructeur
-    public Client(int id, String nom, String adresse, String telephone, boolean estProfessionnel) {
-        this.id = id;
+    public Client( String nom, String adresse, String telephone, boolean estProfessionnel) {
         this.nom = nom;
         this.adresse = adresse;
         this.telephone = telephone;
