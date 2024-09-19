@@ -2,16 +2,19 @@ package com.baticuisine.services;
 
 import com.baticuisine.models.Client;
 import com.baticuisine.repositories.interfaces.ClientRepository;
-import com.baticuisine.repositories.impl.ClientRepositoryImpl;
 
 public class ClientService {
-    private final ClientRepository clientRepository;
+    private ClientRepository clientRepository;
 
-    public ClientService() {
-        this.clientRepository = new ClientRepositoryImpl();
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
 
     public void ajouterClient(Client client) {
         clientRepository.ajouterClient(client);
+    }
+
+    public Client rechercherClientParNom(String nom) {
+        return clientRepository.rechercherClientParNom(nom);
     }
 }

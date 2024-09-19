@@ -68,6 +68,7 @@ public class DatabaseConnection {
             String createProjetTable = "CREATE TABLE IF NOT EXISTS Projet (" +
                     "id SERIAL PRIMARY KEY," +
                     "nomProjet VARCHAR(255) NOT NULL," +
+                    "surface DOUBLE PRECISION," +
                     "margeBeneficiaire DOUBLE PRECISION," +
                     "coutTotal DOUBLE PRECISION," +
                     "etatProjet VARCHAR(50) CHECK (etatProjet IN ('ENCOURS', 'TERMINE', 'ANNULE'))," +

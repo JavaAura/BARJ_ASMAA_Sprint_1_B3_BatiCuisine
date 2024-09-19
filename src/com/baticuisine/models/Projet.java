@@ -5,6 +5,7 @@ import java.util.List;
 public class Projet {
     private int id;
     private String nomProjet;
+    private double surface;
     private double margeBeneficiaire;
     private double coutTotal;
     private EtatProjet etatProjet;
@@ -15,9 +16,10 @@ public class Projet {
         ENCOURS, TERMINE, ANNULE
     }
 
-    public Projet(int id, String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
+    public Projet(int id, String nomProjet,double surface, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
         this.id = id;
         this.nomProjet = nomProjet;
+        this.surface = surface;
         this.margeBeneficiaire = margeBeneficiaire;
         this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
@@ -39,6 +41,14 @@ public class Projet {
 
     public void setNomProjet(String nomProjet) {
         this.nomProjet = nomProjet;
+    }
+
+    public double getSurface() {
+        return surface;
+    }
+
+    public void setSurface(double surface) {
+        this.surface = surface;
     }
 
     public double getMargeBeneficiaire() {
