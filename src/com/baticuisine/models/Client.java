@@ -1,12 +1,16 @@
 package com.baticuisine.models;
 
+import java.util.List;
+
 public class Client {
     private int id;
     private String nom;
     private String adresse;
     private String telephone;
     private boolean estProfessionnel;
+    private List<Projet> projets;
 
+    // Constructeur
     public Client(int id, String nom, String adresse, String telephone, boolean estProfessionnel) {
         this.id = id;
         this.nom = nom;
@@ -15,7 +19,7 @@ public class Client {
         this.estProfessionnel = estProfessionnel;
     }
 
-    // Getters et setters
+    // Getters et Setters
     public int getId() {
         return id;
     }
@@ -54,5 +58,13 @@ public class Client {
 
     public void setEstProfessionnel(boolean estProfessionnel) {
         this.estProfessionnel = estProfessionnel;
+    }
+
+    public List<Projet> getProjets() {
+        return projets;
+    }
+
+    public void setProjets(List<Projet> projets) {
+        this.projets = projets;
     }
 }
