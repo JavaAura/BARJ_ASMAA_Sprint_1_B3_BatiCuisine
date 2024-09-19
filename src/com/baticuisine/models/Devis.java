@@ -8,7 +8,7 @@ public class Devis {
     private LocalDate dateEmission;
     private LocalDate dateValidite;
     private boolean accepte;
-    private int projetId;  // Clé étrangère vers Projet
+    private int projetId;  //
 
     public Devis(int id, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, int projetId) {
         this.id = id;
