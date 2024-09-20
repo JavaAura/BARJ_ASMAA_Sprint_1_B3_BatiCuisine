@@ -12,6 +12,7 @@ public class MainOeuvre extends Composant {
         this.productiviteOuvrier = productiviteOuvrier;
     }
 
+    // Getters et setters
     public double getTauxHoraire() {
         return tauxHoraire;
     }

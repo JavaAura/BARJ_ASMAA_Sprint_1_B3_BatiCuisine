@@ -3,8 +3,8 @@ package com.baticuisine.models;
 public class Materiel extends Composant {
     private double quantite;
     private double coutUnitaire;
-    protected double coutTransport;
-    protected double coefficientQualite;
+    private double coutTransport;
+    private double coefficientQualite;
 
     public Materiel(int id, String nom, String type, double tauxTVA, double quantite, double coutUnitaire, double coutTransport, double coefficientQualite) {
         super(id, nom, type, tauxTVA);
@@ -14,6 +14,7 @@ public class Materiel extends Composant {
         this.coefficientQualite = coefficientQualite;
     }
 
+    // Getters et setters
     public double getQuantite() {
         return quantite;
     }

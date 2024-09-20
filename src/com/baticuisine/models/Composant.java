@@ -6,7 +6,7 @@ public abstract class Composant {
     protected String type;
     protected double tauxTVA;
 
-    public Composant(int id, String nom, String type, double tauxTVA) {  // Correction : 'string' remplacé par 'String'
+    public Composant(int id, String nom, String type, double tauxTVA) {
         this.id = id;
         this.nom = nom;
         this.type = type;
