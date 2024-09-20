@@ -88,12 +88,8 @@ public class DatabaseConnection {
             String createComposantTable = "CREATE TABLE IF NOT EXISTS Composant (" +
                     "id SERIAL PRIMARY KEY," +
                     "nom VARCHAR(255) NOT NULL," +
-                    "coutUnitaire DOUBLE PRECISION," +
-                    "quantite DOUBLE PRECISION," +
                     "typeComposant VARCHAR(50)," +
                     "tauxTVA DOUBLE PRECISION," +
-                    "coutTransport DOUBLE PRECISION," +
-                    "coefficientQualite DOUBLE PRECISION," +
                     "projet_id INTEGER REFERENCES Projet(id)" +
                     ")";
             statement.executeUpdate(createComposantTable);
@@ -109,7 +105,9 @@ public class DatabaseConnection {
             String createMaterielTable = "CREATE TABLE IF NOT EXISTS Materiel (" +
                     "composant_id INTEGER PRIMARY KEY REFERENCES Composant(id)," +
                     "quantite DOUBLE PRECISION," +
-                    "coutUnitaire DOUBLE PRECISION" +
+                    "coutUnitaire DOUBLE PRECISION," +
+                    "coutTransport DOUBLE PRECISION," +
+                    "coefficientQualite DOUBLE PRECISION" +
                     ")";
             statement.executeUpdate(createMaterielTable);
 
