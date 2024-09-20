@@ -2,24 +2,20 @@ package com.baticuisine.services;
 
 import com.baticuisine.models.Client;
 import com.baticuisine.repositories.interfaces.ClientRepository;
+import com.baticuisine.repositories.impl.ClientRepositoryImpl;
 
 public class ClientService {
     private final ClientRepository clientRepository;
 
-    public ClientService(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
+    public ClientService() {
+        this.clientRepository = new ClientRepositoryImpl();
     }
 
     public void ajouterClient(Client client) {
-        if (clientRepository.clientExiste(client.getNom())) {
-            System.out.println("Le client avec le nom \"" + client.getNom() + "\" existe déjà et ne peut pas être ajouté.");
-        } else {
-            clientRepository.ajouterClient(client);
-            System.out.println("Client ajouté : " + client.getNom());
-        }
+        clientRepository.ajouterClient(client);
     }
 
-    public Client rechercherClientParNom(String nom) {
-        return clientRepository.rechercherClientParNom(nom);
+    public Client chercherClientParNom(String nom) {
+        return clientRepository.chercherClientParNom(nom);
     }
 }

@@ -1,4 +1,7 @@
-package com.baticuisine.repositories.impl;
+package com.baticuisine.repositories.interfaces;
 
-public class ProjetRepository {
+import com.baticuisine.models.Projet;
+
+public interface ProjetRepository {
+    void ajouterProjet(Projet projet);
 }
