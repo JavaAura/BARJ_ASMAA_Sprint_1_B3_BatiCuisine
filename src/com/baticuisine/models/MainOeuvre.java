@@ -5,15 +5,13 @@ public class MainOeuvre extends Composant {
     private double heuresTravail;
     private double productiviteOuvrier;
 
-    public MainOeuvre(int id, String nom, double coutUnitaire, double quantite, double tauxTVA, double coutTransport, double coefficientQualite,
-                      double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
-        super(id, nom, coutUnitaire, quantite, tauxTVA, coutTransport, coefficientQualite);
+    public MainOeuvre(int id, String nom, String type, double tauxTVA, double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
+        super(id, nom, type, tauxTVA);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;
     }
 
-    // Getters et setters
     public double getTauxHoraire() {
         return tauxHoraire;
     }

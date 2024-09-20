@@ -1,5 +1,6 @@
 package com.baticuisine.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Projet {
@@ -10,13 +11,13 @@ public class Projet {
     private double coutTotal;
     private EtatProjet etatProjet;
     private Client client;
-    private List<Composant> composants;
+    private List<Composant> composants = new ArrayList<>();
 
     public enum EtatProjet {
         ENCOURS, TERMINE, ANNULE
     }
 
-    public Projet(int id, String nomProjet,double surface, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
+    public Projet(int id, String nomProjet, double surface, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
         this.id = id;
         this.nomProjet = nomProjet;
         this.surface = surface;
@@ -24,6 +25,10 @@ public class Projet {
         this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
         this.client = client;
+    }
+
+    public void ajouterComposant(Composant composant) {
+        composants.add(composant);
     }
 
     // Getters et setters
@@ -85,9 +90,5 @@ public class Projet {
 
     public List<Composant> getComposants() {
         return composants;
-    }
-
-    public void setComposants(List<Composant> composants) {
-        this.composants = composants;
     }
 }

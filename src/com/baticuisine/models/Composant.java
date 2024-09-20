@@ -3,20 +3,14 @@ package com.baticuisine.models;
 public abstract class Composant {
     protected int id;
     protected String nom;
-    protected double coutUnitaire;
-    protected double quantite;
+    protected String type;  // Correction : 'string' doit être 'String'
     protected double tauxTVA;
-    protected double coutTransport;
-    protected double coefficientQualite;
 
-    public Composant(int id, String nom, double coutUnitaire, double quantite, double tauxTVA, double coutTransport, double coefficientQualite) {
+    public Composant(int id, String nom, String type, double tauxTVA) {  // Correction : 'string' remplacé par 'String'
         this.id = id;
         this.nom = nom;
-        this.coutUnitaire = coutUnitaire;
-        this.quantite = quantite;
+        this.type = type;
         this.tauxTVA = tauxTVA;
-        this.coutTransport = coutTransport;
-        this.coefficientQualite = coefficientQualite;
     }
 
     // Getters et setters
@@ -36,20 +30,12 @@ public abstract class Composant {
         this.nom = nom;
     }
 
-    public double getCoutUnitaire() {
-        return coutUnitaire;
+    public String getType() {
+        return type;
     }
 
-    public void setCoutUnitaire(double coutUnitaire) {
-        this.coutUnitaire = coutUnitaire;
-    }
-
-    public double getQuantite() {
-        return quantite;
-    }
-
-    public void setQuantite(double quantite) {
-        this.quantite = quantite;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public double getTauxTVA() {
@@ -58,21 +44,5 @@ public abstract class Composant {
 
     public void setTauxTVA(double tauxTVA) {
         this.tauxTVA = tauxTVA;
-    }
-
-    public double getCoutTransport() {
-        return coutTransport;
-    }
-
-    public void setCoutTransport(double coutTransport) {
-        this.coutTransport = coutTransport;
-    }
-
-    public double getCoefficientQualite() {
-        return coefficientQualite;
-    }
-
-    public void setCoefficientQualite(double coefficientQualite) {
-        this.coefficientQualite = coefficientQualite;
     }
 }
