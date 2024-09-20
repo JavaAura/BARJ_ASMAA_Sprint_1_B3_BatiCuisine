@@ -39,6 +39,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     }
 
 
+
     @Override
     public Client chercherClientParNom(String nom) {
         String sql = "SELECT * FROM Client WHERE nom = ?";

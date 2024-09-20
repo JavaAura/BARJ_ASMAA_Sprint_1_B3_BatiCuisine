@@ -1,4 +1,4 @@
 package com.baticuisine.repositories.interfaces;
 
-public class ComposantRepository {
+public interface ComposantRepository {
 }

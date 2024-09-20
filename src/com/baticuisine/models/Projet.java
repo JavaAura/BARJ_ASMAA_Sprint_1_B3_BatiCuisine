@@ -11,7 +11,7 @@ public class Projet {
     private double coutTotal;
     private EtatProjet etatProjet;
     private Client client;
-    private List<Composant> composants = new ArrayList<>();
+    private final List<Composant> composants = new ArrayList<>();
 
     public enum EtatProjet {
         ENCOURS, TERMINE, ANNULE
