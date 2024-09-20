@@ -3,7 +3,7 @@ package com.baticuisine.models;
 public abstract class Composant {
     protected int id;
     protected String nom;
-    protected String type;  // Correction : 'string' doit être 'String'
+    protected String type;
     protected double tauxTVA;
 
     public Composant(int id, String nom, String type, double tauxTVA) {  // Correction : 'string' remplacé par 'String'

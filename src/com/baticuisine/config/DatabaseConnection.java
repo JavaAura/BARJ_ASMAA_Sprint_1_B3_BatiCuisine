@@ -88,7 +88,7 @@ public class DatabaseConnection {
             String createComposantTable = "CREATE TABLE IF NOT EXISTS Composant (" +
                     "id SERIAL PRIMARY KEY," +
                     "nom VARCHAR(255) NOT NULL," +
-                    "typeComposant VARCHAR(50)," +
+                    "type VARCHAR(50)," +
                     "tauxTVA DOUBLE PRECISION," +
                     "projet_id INTEGER REFERENCES Projet(id)" +
                     ")";

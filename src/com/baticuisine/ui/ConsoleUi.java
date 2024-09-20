@@ -20,6 +20,7 @@ public class ConsoleUi {
         System.out.println("1. Chercher un client existant");
         System.out.println("2. Ajouter un nouveau client");
         System.out.print("Choisissez une option : ");
+
         int option = Integer.parseInt(scanner.nextLine());
 
         Client client;

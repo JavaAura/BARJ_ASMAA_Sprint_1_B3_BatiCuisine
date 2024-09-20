@@ -52,7 +52,9 @@ public class ClientRepositoryImpl implements ClientRepository {
                     String adresse = resultSet.getString("adresse");
                     String telephone = resultSet.getString("telephone");
                     boolean estProfessionnel = resultSet.getBoolean("estProfessionnel");
-                    return new Client(nom, adresse, telephone, estProfessionnel);
+                    Client client = new Client(nom, adresse, telephone, estProfessionnel);
+                    client.setId(id); // Assigner l'ID au client
+                    return client;
                 }
             }
         } catch (SQLException e) {
@@ -60,6 +62,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         }
         return null;
     }
+
 
     @Override
     public boolean clientExists(String nom) {
