@@ -98,7 +98,6 @@ public class ConsoleUi {
     }
 
     private static void ajouterComposants(Projet projet, ComposantService composantService) {
-        // Ajout des matériaux
         while (true) {
             System.out.println("--- Ajout des matériaux ---");
             System.out.print("Entrez le nom du matériau : ");
