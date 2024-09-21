@@ -8,6 +8,7 @@ import com.baticuisine.repositories.interfaces.ComposantRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet; // Import nécessaire
 import java.sql.SQLException;
 
 public class ComposantRepositoryImpl implements ComposantRepository {
@@ -26,15 +27,20 @@ public class ComposantRepositoryImpl implements ComposantRepository {
             statement.setDouble(3, composant.getTauxTVA());
 
             // Execute the insertion and get the generated ID
-            statement.executeUpdate();
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    int generatedId = rs.getInt(1);
+                    composant.setId(generatedId); // Set the generated ID to the composant
+
+                    if (composant instanceof Materiel) {
+                        ajouterMateriel((Materiel) composant);
+                    } else if (composant instanceof MainOeuvre) {
+                        ajouterMainOeuvre((MainOeuvre) composant);
+                    }
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'ajout du composant : " + e.getMessage());
-        }
-
-        if (composant instanceof Materiel) {
-            ajouterMateriel((Materiel) composant);
-        } else if (composant instanceof MainOeuvre) {
-            ajouterMainOeuvre((MainOeuvre) composant);
         }
     }
 
