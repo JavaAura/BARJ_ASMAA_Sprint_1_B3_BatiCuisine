@@ -5,12 +5,15 @@ public abstract class Composant {
     protected String nom;
     protected String type;
     protected double tauxTVA;
+    protected int projetId;
 
-    public Composant(int id, String nom, String type, double tauxTVA) {
+    public Composant(int id, String nom, String type, double tauxTVA, int projetId) {
         this.id = id;
         this.nom = nom;
         this.type = type;
         this.tauxTVA = tauxTVA;
+        this.projetId = projetId;
+
     }
 
     // Getters et setters
@@ -44,5 +47,12 @@ public abstract class Composant {
 
     public void setTauxTVA(double tauxTVA) {
         this.tauxTVA = tauxTVA;
+    }
+    public int getProjetId() {
+        return projetId;
+    }
+
+    public void setProjetId(int projetId) {
+        this.projetId = projetId;
     }
 }

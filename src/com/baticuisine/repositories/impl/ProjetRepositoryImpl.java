@@ -7,6 +7,7 @@ import com.baticuisine.repositories.interfaces.ProjetRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 public class ProjetRepositoryImpl implements ProjetRepository {
     private final Connection connection;
@@ -17,25 +18,21 @@ public class ProjetRepositoryImpl implements ProjetRepository {
 
     @Override
     public void ajouterProjet(Projet projet) {
-        String sql = "INSERT INTO Projet (nomProjet, surface, margeBeneficiaire, coutTotal, etatProjet, client_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Projet (nomProjet, surface, margeBeneficiaire, coutTotal, etatProjet, client_id) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, projet.getNomProjet());
             statement.setDouble(2, projet.getSurface());
-
-            if (projet.getMargeBeneficiaire() != null) {
-                statement.setDouble(3, projet.getMargeBeneficiaire());
-            } else {
-                statement.setNull(3, java.sql.Types.DOUBLE); // Passer NULL à la base de données
-            }
-
+            statement.setObject(3, projet.getMargeBeneficiaire(), java.sql.Types.DOUBLE);
             statement.setDouble(4, projet.getCoutTotal());
             statement.setString(5, projet.getEtatProjet().name());
             statement.setInt(6, projet.getClient().getId());
 
-            statement.executeUpdate();
-            System.out.println("Projet ajouté avec succès !");
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    projet.setId(rs.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'ajout du projet : " + e.getMessage());
         }

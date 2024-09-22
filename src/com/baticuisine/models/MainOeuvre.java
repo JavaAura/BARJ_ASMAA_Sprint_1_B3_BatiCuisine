@@ -5,8 +5,8 @@ public class MainOeuvre extends Composant {
     private double heuresTravail;
     private double productiviteOuvrier;
 
-    public MainOeuvre(int id, String nom, String type, double tauxTVA, double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
-        super(id, nom, type, tauxTVA);
+    public MainOeuvre(int id, String nom, String type, double tauxTVA,int projetId, double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
+        super(id, nom, type, tauxTVA,projetId);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;

@@ -20,11 +20,12 @@ public class ComposantRepositoryImpl implements ComposantRepository {
 
     @Override
     public void ajouterComposant(Composant composant) {
-        String sql = "INSERT INTO Composant (nom, type, tauxTVA) VALUES (?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO Composant (nom, type, tauxTVA, projet_id) VALUES (?, ?, ?, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, composant.getNom());
             statement.setString(2, composant.getType());
             statement.setDouble(3, composant.getTauxTVA());
+            statement.setInt(4, composant.getProjetId()); // Assurez-vous d'ajouter le projet_id
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
