@@ -7,7 +7,7 @@ public class Projet {
     private int id;
     private String nomProjet;
     private double surface;
-    private double margeBeneficiaire;
+    private Double margeBeneficiaire;
     private double coutTotal;
     private EtatProjet etatProjet;
     private Client client;
@@ -17,7 +17,7 @@ public class Projet {
         ENCOURS, TERMINE, ANNULE
     }
 
-    public Projet(int id, String nomProjet, double surface, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
+    public Projet(int id, String nomProjet, double surface, Double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
         this.id = id;
         this.nomProjet = nomProjet;
         this.surface = surface;
@@ -56,11 +56,11 @@ public class Projet {
         this.surface = surface;
     }
 
-    public double getMargeBeneficiaire() {
+    public Double getMargeBeneficiaire() { // Getter qui renvoie un Double
         return margeBeneficiaire;
     }
 
-    public void setMargeBeneficiaire(double margeBeneficiaire) {
+    public void setMargeBeneficiaire(Double margeBeneficiaire) { // Accepte null
         this.margeBeneficiaire = margeBeneficiaire;
     }
 

@@ -23,7 +23,13 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, projet.getNomProjet());
             statement.setDouble(2, projet.getSurface());
-            statement.setDouble(3, projet.getMargeBeneficiaire());
+
+            if (projet.getMargeBeneficiaire() != null) {
+                statement.setDouble(3, projet.getMargeBeneficiaire());
+            } else {
+                statement.setNull(3, java.sql.Types.DOUBLE); // Passer NULL à la base de données
+            }
+
             statement.setDouble(4, projet.getCoutTotal());
             statement.setString(5, projet.getEtatProjet().name());
             statement.setInt(6, projet.getClient().getId());
@@ -34,5 +40,4 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             System.out.println("Erreur lors de l'ajout du projet : " + e.getMessage());
         }
     }
-
 }

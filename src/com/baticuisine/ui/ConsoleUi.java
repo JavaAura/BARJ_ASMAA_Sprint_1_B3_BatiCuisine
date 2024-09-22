@@ -86,19 +86,22 @@ public class ConsoleUi {
         String nomProjet = scanner.nextLine();
         System.out.print("Entrez la surface de la cuisine (en m²) : ");
         double surface = Double.parseDouble(scanner.nextLine());
-        System.out.print("Entrez la marge bénéficiaire (%) : ");
-        double margeBeneficiaire = Double.parseDouble(scanner.nextLine());
+
+        Double margeBeneficiaire = null;
+
         System.out.print("Entrez le coût total estimé (€) : ");
         double coutTotal = Double.parseDouble(scanner.nextLine());
 
-        Projet projet = new Projet(0, nomProjet, surface, margeBeneficiaire, coutTotal, EtatProjet.ENCOURS, client);
+        Projet projet = new Projet(0, nomProjet, surface, margeBeneficiaire, coutTotal, Projet.EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
         System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
     }
 
+
+
+
     private static void ajouterComposants(Projet projet, ComposantService composantService) {
-        // Ajout des matériaux
         while (true) {
             System.out.println("--- Ajout des matériaux ---");
             System.out.print("Entrez le nom du matériau : ");
@@ -112,7 +115,7 @@ public class ConsoleUi {
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
             System.out.print("Entrez le taux de TVA du matériau : ");
-            double tauxTVA = Double.parseDouble(scanner.nextLine()); // Demande de TVA
+            double tauxTVA = Double.parseDouble(scanner.nextLine());
 
             Materiel materiel = new Materiel(0, nomMateriel, "Matériel", tauxTVA, quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
@@ -125,7 +128,6 @@ public class ConsoleUi {
             }
         }
 
-        // Ajout de la main-d'œuvre
         while (true) {
             System.out.println("--- Ajout de la main-d'œuvre ---");
             System.out.print("Entrez le type de main-d'œuvre : ");
