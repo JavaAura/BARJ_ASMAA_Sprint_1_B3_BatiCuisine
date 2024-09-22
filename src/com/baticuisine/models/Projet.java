@@ -17,8 +17,7 @@ public class Projet {
         ENCOURS, TERMINE, ANNULE
     }
 
-    public Projet(int id, String nomProjet, double surface, Double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
-        this.id = id;
+    public Projet(String nomProjet, double surface, Double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
         this.nomProjet = nomProjet;
         this.surface = surface;
         this.margeBeneficiaire = margeBeneficiaire;
@@ -26,6 +25,10 @@ public class Projet {
         this.etatProjet = etatProjet;
         this.client = client;
     }
+
+
+
+
 
     public void ajouterComposant(Composant composant) {
         composants.add(composant);

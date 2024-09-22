@@ -92,11 +92,13 @@ public class ConsoleUi {
         System.out.print("Entrez le coût total estimé (€) : ");
         double coutTotal = Double.parseDouble(scanner.nextLine());
 
-        Projet projet = new Projet(0, nomProjet, surface, margeBeneficiaire, coutTotal, Projet.EtatProjet.ENCOURS, client);
+        // Appel du constructeur sans l'ID
+        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, coutTotal, Projet.EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
         System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
     }
+
 
 
 
