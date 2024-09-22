@@ -4,10 +4,10 @@ public abstract class Composant {
     protected int id;
     protected String nom;
     protected String type;
-    protected double tauxTVA;
+    protected Double tauxTVA;
     protected int projetId;
 
-    public Composant(int id, String nom, String type, double tauxTVA, int projetId) {
+    public Composant(int id, String nom, String type, Double tauxTVA, int projetId) {
         this.id = id;
         this.nom = nom;
         this.type = type;
@@ -41,11 +41,11 @@ public abstract class Composant {
         this.type = type;
     }
 
-    public double getTauxTVA() {
+    public Double getTauxTVA() {
         return tauxTVA;
     }
 
-    public void setTauxTVA(double tauxTVA) {
+    public void setTauxTVA(Double tauxTVA) {
         this.tauxTVA = tauxTVA;
     }
     public int getProjetId() {

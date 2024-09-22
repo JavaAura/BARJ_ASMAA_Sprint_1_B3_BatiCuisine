@@ -90,7 +90,7 @@ public class DatabaseConnection {
                     "id SERIAL PRIMARY KEY," +
                     "nom VARCHAR(255) NOT NULL," +
                     "type VARCHAR(50)," +
-                    "tauxTVA DOUBLE PRECISION," +
+                    "tauxTVA DOUBLE PRECISION DEFAULT NULL," +
                     "projet_id INTEGER REFERENCES Projet(id)" +
                     ")";
             statement.executeUpdate(createComposantTable);

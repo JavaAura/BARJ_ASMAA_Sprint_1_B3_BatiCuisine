@@ -18,14 +18,21 @@ public class ComposantRepositoryImpl implements ComposantRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
+
     @Override
     public void ajouterComposant(Composant composant) {
         String sql = "INSERT INTO Composant (nom, type, tauxTVA, projet_id) VALUES (?, ?, ?, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, composant.getNom());
             statement.setString(2, composant.getType());
-            statement.setDouble(3, composant.getTauxTVA());
-            statement.setInt(4, composant.getProjetId()); // Assurez-vous d'ajouter le projet_id
+
+            if (composant.getTauxTVA() != null) {
+                statement.setDouble(3, composant.getTauxTVA());
+            } else {
+                statement.setNull(3, java.sql.Types.DOUBLE);
+            }
+
+            statement.setInt(4, composant.getProjetId());
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
@@ -34,9 +41,11 @@ public class ComposantRepositoryImpl implements ComposantRepository {
 
                     if (composant instanceof Materiel) {
                         MaterielRepositoryImpl materielRepo = new MaterielRepositoryImpl();
+                        ((Materiel) composant).setId(generatedId);
                         materielRepo.ajouterMateriel((Materiel) composant);
                     } else if (composant instanceof MainOeuvre) {
                         MainOeuvreRepositoryImpl mainOeuvreRepo = new MainOeuvreRepositoryImpl();
+                        ((MainOeuvre) composant).setId(generatedId);
                         mainOeuvreRepo.ajouterMainOeuvre((MainOeuvre) composant);
                     }
                 }

@@ -24,6 +24,7 @@ public class MaterielRepositoryImpl implements MaterielRepository {
             statement.setDouble(3, materiel.getCoutUnitaire());
             statement.setDouble(4, materiel.getCoutTransport());
             statement.setDouble(5, materiel.getCoefficientQualite());
+
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'ajout du matériel : " + e.getMessage());

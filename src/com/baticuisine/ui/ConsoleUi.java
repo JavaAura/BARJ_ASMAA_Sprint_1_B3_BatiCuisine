@@ -111,10 +111,9 @@ public class ConsoleUi {
             double coutTransport = Double.parseDouble(scanner.nextLine());
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
-            System.out.print("Entrez le taux de TVA du matériau : ");
-            double tauxTVA = Double.parseDouble(scanner.nextLine());
 
-            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", tauxTVA, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
+
+            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", null, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
             composantService.ajouterComposant(materiel);
             System.out.println("Matériau ajouté avec succès !");
@@ -135,10 +134,8 @@ public class ConsoleUi {
             double heuresTravail = Double.parseDouble(scanner.nextLine());
             System.out.print("Entrez le facteur de productivité : ");
             double productiviteOuvrier = Double.parseDouble(scanner.nextLine());
-            System.out.print("Entrez le taux de TVA de la main-d'œuvre : ");
-            double tauxTVA = Double.parseDouble(scanner.nextLine());
 
-            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", tauxTVA, projet.getId(), tauxHoraire, heuresTravail, productiviteOuvrier);
+            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", null, projet.getId(), tauxHoraire, heuresTravail, productiviteOuvrier);
             projet.ajouterComposant(mainOeuvre);
             composantService.ajouterComposant(mainOeuvre);
             System.out.println("Main-d'œuvre ajoutée avec succès !");
