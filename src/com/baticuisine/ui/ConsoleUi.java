@@ -98,6 +98,7 @@ public class ConsoleUi {
     }
 
     private static void ajouterComposants(Projet projet, ComposantService composantService) {
+        // Ajout des matériaux
         while (true) {
             System.out.println("--- Ajout des matériaux ---");
             System.out.print("Entrez le nom du matériau : ");
@@ -110,8 +111,10 @@ public class ConsoleUi {
             double coutTransport = Double.parseDouble(scanner.nextLine());
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
+            System.out.print("Entrez le taux de TVA du matériau : ");
+            double tauxTVA = Double.parseDouble(scanner.nextLine()); // Demande de TVA
 
-            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", 0, quantite, coutUnitaire, coutTransport, coefficientQualite);
+            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", tauxTVA, quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
             composantService.ajouterComposant(materiel);
             System.out.println("Matériau ajouté avec succès !");
@@ -122,6 +125,7 @@ public class ConsoleUi {
             }
         }
 
+        // Ajout de la main-d'œuvre
         while (true) {
             System.out.println("--- Ajout de la main-d'œuvre ---");
             System.out.print("Entrez le type de main-d'œuvre : ");
@@ -132,8 +136,10 @@ public class ConsoleUi {
             double heuresTravail = Double.parseDouble(scanner.nextLine());
             System.out.print("Entrez le facteur de productivité : ");
             double productiviteOuvrier = Double.parseDouble(scanner.nextLine());
+            System.out.print("Entrez le taux de TVA de la main-d'œuvre : ");
+            double tauxTVA = Double.parseDouble(scanner.nextLine()); // Demande de TVA
 
-            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", 0, tauxHoraire, heuresTravail, productiviteOuvrier);
+            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", tauxTVA, tauxHoraire, heuresTravail, productiviteOuvrier);
             projet.ajouterComposant(mainOeuvre);
             composantService.ajouterComposant(mainOeuvre);
             System.out.println("Main-d'œuvre ajoutée avec succès !");
