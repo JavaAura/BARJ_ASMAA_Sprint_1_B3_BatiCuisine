@@ -14,4 +14,7 @@ public class ProjetService {
     public void ajouterProjet(Projet projet) {
         projetRepository.ajouterProjet(projet);
     }
+    public void mettreAJourCoutTotal(Projet projet) {
+        projetRepository.mettreAJourCoutTotal(projet);
+    }
 }

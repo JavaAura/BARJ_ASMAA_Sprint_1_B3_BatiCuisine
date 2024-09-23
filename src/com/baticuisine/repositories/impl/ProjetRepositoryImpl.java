@@ -18,7 +18,8 @@ public class ProjetRepositoryImpl implements ProjetRepository {
 
     @Override
     public void ajouterProjet(Projet projet) {
-        String sql = "INSERT INTO Projet (nomProjet, surface, margeBeneficiaire, coutTotal, etatProjet, client_id) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO Projet (nomProjet, surface, margeBeneficiaire, coutTotal, etatProjet, client_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, projet.getNomProjet());
@@ -35,6 +36,18 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'ajout du projet : " + e.getMessage());
+        }
+    }
+
+    public void mettreAJourCoutTotal(Projet projet) {
+        String sql = "UPDATE Projet SET coutTotal = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, projet.getCoutTotal());
+            statement.setInt(2, projet.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la mise à jour du coût total du projet : " + e.getMessage());
         }
     }
 }

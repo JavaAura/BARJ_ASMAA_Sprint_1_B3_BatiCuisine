@@ -37,6 +37,7 @@ public class ConsoleUi {
         if (client != null) {
             Projet projet = ajouterProjet(projetService, client);
             ajouterComposants(projet, composantService);
+            projetService.mettreAJourCoutTotal(projet);
         } else {
             System.out.println("Impossible d'ajouter un projet sans client.");
         }
@@ -87,12 +88,9 @@ public class ConsoleUi {
         System.out.print("Entrez la surface de la cuisine (en m²) : ");
         double surface = Double.parseDouble(scanner.nextLine());
 
-        Double margeBeneficiaire = null;
+        Double margeBeneficiaire = null; // Optional
 
-        System.out.print("Entrez le coût total estimé (€) : ");
-        double coutTotal = Double.parseDouble(scanner.nextLine());
-
-        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, coutTotal, Projet.EtatProjet.ENCOURS, client);
+        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, Projet.EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
         System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
@@ -112,7 +110,7 @@ public class ConsoleUi {
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
 
-
+            // Creating the material object without null for tauxTVA
             Materiel materiel = new Materiel(0, nomMateriel, "Matériel", null, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
             composantService.ajouterComposant(materiel);
@@ -145,5 +143,8 @@ public class ConsoleUi {
                 break;
             }
         }
+
+        projet.calculerCoutTotal();
+
     }
 }

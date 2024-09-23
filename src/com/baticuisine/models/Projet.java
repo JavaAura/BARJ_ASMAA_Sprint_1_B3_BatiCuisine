@@ -17,24 +17,39 @@ public class Projet {
         ENCOURS, TERMINE, ANNULE
     }
 
-    public Projet(String nomProjet, double surface, Double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
+    public Projet(String nomProjet, double surface, Double margeBeneficiaire, EtatProjet etatProjet, Client client) {
         this.nomProjet = nomProjet;
         this.surface = surface;
         this.margeBeneficiaire = margeBeneficiaire;
-        this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
         this.client = client;
+        this.coutTotal = 0;  // Initialize coutTotal
     }
-
-
-
-
 
     public void ajouterComposant(Composant composant) {
         composants.add(composant);
+        calculerCoutTotal();
     }
 
-    // Getters et setters
+    public void calculerCoutTotal() {
+        double totalMateriaux = 0;
+        double totalMainOeuvre = 0;
+
+        for (Composant composant : composants) {
+            if (composant instanceof Materiel materiel) {
+                double coutMateriel = (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
+                totalMateriaux += coutMateriel;
+            } else if (composant instanceof MainOeuvre mainOeuvre) {
+                double coutMainOeuvre = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
+                totalMainOeuvre += coutMainOeuvre;
+            }
+        }
+
+        this.coutTotal = totalMateriaux + totalMainOeuvre;
+        System.out.println("Cout total calculé: " + this.coutTotal);  // Debugging statement
+    }
+
+    // Getters and setters
     public int getId() {
         return id;
     }
@@ -59,20 +74,16 @@ public class Projet {
         this.surface = surface;
     }
 
-    public Double getMargeBeneficiaire() { // Getter qui renvoie un Double
+    public Double getMargeBeneficiaire() {
         return margeBeneficiaire;
     }
 
-    public void setMargeBeneficiaire(Double margeBeneficiaire) { // Accepte null
+    public void setMargeBeneficiaire(Double margeBeneficiaire) {
         this.margeBeneficiaire = margeBeneficiaire;
     }
 
     public double getCoutTotal() {
         return coutTotal;
-    }
-
-    public void setCoutTotal(double coutTotal) {
-        this.coutTotal = coutTotal;
     }
 
     public EtatProjet getEtatProjet() {
