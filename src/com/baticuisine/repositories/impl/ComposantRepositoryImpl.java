@@ -25,11 +25,10 @@ public class ComposantRepositoryImpl implements ComposantRepository {
             statement.setString(1, composant.getNom());
             statement.setString(2, composant.getType());
 
-            // Handle null for tauxTVA
             if (composant.getTauxTVA() != null) {
                 statement.setDouble(3, composant.getTauxTVA());
             } else {
-                statement.setNull(3, java.sql.Types.DOUBLE); // Set SQL NULL if tauxTVA is null
+                statement.setNull(3, java.sql.Types.DOUBLE);
             }
 
             statement.setInt(4, composant.getProjetId());
@@ -39,7 +38,6 @@ public class ComposantRepositoryImpl implements ComposantRepository {
                     int generatedId = rs.getInt(1);
                     composant.setId(generatedId);
 
-                    // Add logic for Materiel and MainOeuvre if needed
                     if (composant instanceof Materiel materiel) {
                         MaterielRepositoryImpl materielRepo = new MaterielRepositoryImpl();
                         materiel.setId(generatedId);
@@ -70,4 +68,5 @@ public class ComposantRepositoryImpl implements ComposantRepository {
             System.out.println("Erreur lors de la mise à jour des taux de TVA : " + e.getMessage());
         }
     }
+
 }

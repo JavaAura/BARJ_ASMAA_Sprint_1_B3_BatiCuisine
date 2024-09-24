@@ -28,20 +28,14 @@ public class ConsoleUi {
         System.out.print("Choisissez une option : ");
 
         int option = Integer.parseInt(scanner.nextLine());
-
-        Client client;
-        if (option == 1) {
-            client = chercherClientExistant(clientService);
-        } else {
-            client = ajouterNouveauClient(clientService);
-        }
+        Client client = (option == 1) ? chercherClientExistant(clientService) : ajouterNouveauClient(clientService);
 
         if (client != null) {
             Projet projet = ajouterProjet(projetService, client);
             ajouterComposants(projet, composantService);
             projetService.mettreAJourCoutTotal(projet);
             appliquerTVA(projet);
-            appliquerMargeBeneficiaire(projet); // New margin function
+            appliquerMargeBeneficiaire(projet);
         } else {
             System.out.println("Impossible d'ajouter un projet sans client.");
         }
@@ -58,8 +52,7 @@ public class ConsoleUi {
             System.out.println("Adresse : " + client.getAdresse());
             System.out.println("Numéro de téléphone : " + client.getTelephone());
             System.out.print("Souhaitez-vous continuer avec ce client ? (y/n) : ");
-            String choix = scanner.nextLine();
-            if (choix.equalsIgnoreCase("y")) {
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
                 return client;
             }
         } else {
@@ -92,9 +85,7 @@ public class ConsoleUi {
         System.out.print("Entrez la surface de la cuisine (en m²) : ");
         double surface = Double.parseDouble(scanner.nextLine());
 
-        Double margeBeneficiaire = null; // Optional
-
-        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, EtatProjet.ENCOURS, client);
+        Projet projet = new Projet(nomProjet, surface, null, EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
         System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
@@ -114,7 +105,6 @@ public class ConsoleUi {
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
 
-            // Creating the material object with default tauxTVA of 0.0
             Materiel materiel = new Materiel(0, nomMateriel, "Matériel", 0.0, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
             composantService.ajouterComposant(materiel);
@@ -147,7 +137,6 @@ public class ConsoleUi {
                 break;
             }
         }
-
     }
 
     private static void appliquerTVA(Projet projet) {
@@ -158,6 +147,8 @@ public class ConsoleUi {
 
             ComposantRepositoryImpl composantRepo = new ComposantRepositoryImpl();
             composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
+
+            projet.calculerCoutTotal();
         } else {
             System.out.println("Aucune TVA appliquée.");
         }
@@ -175,5 +166,7 @@ public class ConsoleUi {
         } else {
             System.out.println("Aucune marge bénéficiaire appliquée.");
         }
+
+        projet.afficherResultats();
     }
 }

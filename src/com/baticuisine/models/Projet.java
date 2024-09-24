@@ -23,7 +23,7 @@ public class Projet {
         this.margeBeneficiaire = margeBeneficiaire;
         this.etatProjet = etatProjet;
         this.client = client;
-        this.coutTotal = 0;  // Initialize coutTotal
+        this.coutTotal = 0;
     }
 
     public void ajouterComposant(Composant composant) {
@@ -45,9 +45,54 @@ public class Projet {
             }
         }
 
-        this.coutTotal = totalMateriaux + totalMainOeuvre;
-        System.out.println("Cout total calculé: " + this.coutTotal);  // Debugging statement
+        double totalMateriauxAvecTVA = totalMateriaux;
+        double totalMainOeuvreAvecTVA = totalMainOeuvre;
+
+        for (Composant composant : composants) {
+            if (composant instanceof Materiel materiel && materiel.getTauxTVA() != null) {
+                double tva = materiel.getTauxTVA() / 100;
+                totalMateriauxAvecTVA += totalMateriaux * tva;
+            }
+            if (composant instanceof MainOeuvre mainOeuvre && mainOeuvre.getTauxTVA() != null) {
+                double tva = mainOeuvre.getTauxTVA() / 100;
+                totalMainOeuvreAvecTVA += totalMainOeuvre * tva;
+            }
+        }
+
+        this.coutTotal = totalMateriauxAvecTVA + totalMainOeuvreAvecTVA;
     }
+
+    public void afficherResultats() {
+        double totalMateriaux = 0;
+        double totalMainOeuvre = 0;
+
+        for (Composant composant : composants) {
+            if (composant instanceof Materiel materiel) {
+                double coutMateriel = (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
+                totalMateriaux += coutMateriel;
+            } else if (composant instanceof MainOeuvre mainOeuvre) {
+                double coutMainOeuvre = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
+                totalMainOeuvre += coutMainOeuvre;
+            }
+        }
+
+        double totalMateriauxAvecTVA = totalMateriaux * 1.2;
+        double totalMainOeuvreAvecTVA = totalMainOeuvre * 1.2;
+        double totalAvantMarge = totalMateriauxAvecTVA + totalMainOeuvreAvecTVA;
+
+        double margeBeneficiaire = totalAvantMarge * (this.margeBeneficiaire / 100);
+        double coutTotalFinal = totalAvantMarge + margeBeneficiaire;
+
+        System.out.println("--- Résultat du Calcul ---");
+        System.out.println("Coût total des matériaux avant TVA : " + totalMateriaux + " €");
+        System.out.println("Coût total des matériaux avec TVA : " + totalMateriauxAvecTVA + " €");
+        System.out.println("Coût total de la main-d'œuvre avant TVA : " + totalMainOeuvre + " €");
+        System.out.println("Coût total de la main-d'œuvre avec TVA : " + totalMainOeuvreAvecTVA + " €");
+        System.out.println("Coût total avant marge : " + totalAvantMarge + " €");
+        System.out.println("Marge bénéficiaire (" + this.margeBeneficiaire + "%) : " + margeBeneficiaire + " €");
+        System.out.println("Coût total final du projet : " + coutTotalFinal + " €");
+    }
+
 
     // Getters and setters
     public int getId() {
