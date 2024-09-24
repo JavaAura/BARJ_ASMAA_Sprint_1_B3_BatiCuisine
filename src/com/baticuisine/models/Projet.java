@@ -32,49 +32,59 @@ public class Projet {
     }
 
     public void calculerCoutTotal() {
-        double totalMateriaux = 0;
-        double totalMainOeuvre = 0;
+        double totalMateriaux = composants.stream()
+                .filter(composant -> composant instanceof Materiel)
+                .mapToDouble(composant -> {
+                    Materiel materiel = (Materiel) composant;
+                    return (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
+                })
+                .sum();
 
-        for (Composant composant : composants) {
-            if (composant instanceof Materiel materiel) {
-                double coutMateriel = (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
-                totalMateriaux += coutMateriel;
-            } else if (composant instanceof MainOeuvre mainOeuvre) {
-                double coutMainOeuvre = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
-                totalMainOeuvre += coutMainOeuvre;
-            }
-        }
+        double totalMainOeuvre = composants.stream()
+                .filter(composant -> composant instanceof MainOeuvre)
+                .mapToDouble(composant -> {
+                    MainOeuvre mainOeuvre = (MainOeuvre) composant;
+                    return mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
+                })
+                .sum();
 
-        double totalMateriauxAvecTVA = totalMateriaux;
-        double totalMainOeuvreAvecTVA = totalMainOeuvre;
+        double totalMateriauxAvecTVA = totalMateriaux +
+                composants.stream()
+                        .filter(composant -> composant instanceof Materiel)
+                        .mapToDouble(composant -> {
+                            Materiel materiel = (Materiel) composant;
+                            return (materiel.getTauxTVA() != null) ? totalMateriaux * (materiel.getTauxTVA() / 100) : 0;
+                        })
+                        .sum();
 
-        for (Composant composant : composants) {
-            if (composant instanceof Materiel materiel && materiel.getTauxTVA() != null) {
-                double tva = materiel.getTauxTVA() / 100;
-                totalMateriauxAvecTVA += totalMateriaux * tva;
-            }
-            if (composant instanceof MainOeuvre mainOeuvre && mainOeuvre.getTauxTVA() != null) {
-                double tva = mainOeuvre.getTauxTVA() / 100;
-                totalMainOeuvreAvecTVA += totalMainOeuvre * tva;
-            }
-        }
+        double totalMainOeuvreAvecTVA = totalMainOeuvre +
+                composants.stream()
+                        .filter(composant -> composant instanceof MainOeuvre)
+                        .mapToDouble(composant -> {
+                            MainOeuvre mainOeuvre = (MainOeuvre) composant;
+                            return (mainOeuvre.getTauxTVA() != null) ? totalMainOeuvre * (mainOeuvre.getTauxTVA() / 100) : 0;
+                        })
+                        .sum();
 
         this.coutTotal = totalMateriauxAvecTVA + totalMainOeuvreAvecTVA;
     }
 
     public void afficherResultats() {
-        double totalMateriaux = 0;
-        double totalMainOeuvre = 0;
+        double totalMateriaux = composants.stream()
+                .filter(composant -> composant instanceof Materiel)
+                .mapToDouble(composant -> {
+                    Materiel materiel = (Materiel) composant;
+                    return (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
+                })
+                .sum();
 
-        for (Composant composant : composants) {
-            if (composant instanceof Materiel materiel) {
-                double coutMateriel = (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
-                totalMateriaux += coutMateriel;
-            } else if (composant instanceof MainOeuvre mainOeuvre) {
-                double coutMainOeuvre = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
-                totalMainOeuvre += coutMainOeuvre;
-            }
-        }
+        double totalMainOeuvre = composants.stream()
+                .filter(composant -> composant instanceof MainOeuvre)
+                .mapToDouble(composant -> {
+                    MainOeuvre mainOeuvre = (MainOeuvre) composant;
+                    return mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
+                })
+                .sum();
 
         double totalMateriauxAvecTVA = totalMateriaux * 1.2;
         double totalMainOeuvreAvecTVA = totalMainOeuvre * 1.2;
@@ -92,7 +102,6 @@ public class Projet {
         System.out.println("Marge bénéficiaire (" + this.margeBeneficiaire + "%) : " + margeBeneficiaire + " €");
         System.out.println("Coût total final du projet : " + coutTotalFinal + " €");
     }
-
 
     // Getters and setters
     public int getId() {
@@ -130,7 +139,9 @@ public class Projet {
     public double getCoutTotal() {
         return coutTotal;
     }
-
+    public void setCoutTotal(double coutTotal) {
+        this.coutTotal = coutTotal;
+    }
     public EtatProjet getEtatProjet() {
         return etatProjet;
     }

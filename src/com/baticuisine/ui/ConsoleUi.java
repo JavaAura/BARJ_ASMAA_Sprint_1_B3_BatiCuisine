@@ -3,6 +3,7 @@ package com.baticuisine.ui;
 import com.baticuisine.models.Client;
 import com.baticuisine.models.Projet;
 import com.baticuisine.models.Devis;
+import com.baticuisine.models.Composant;
 import com.baticuisine.models.Projet.EtatProjet;
 import com.baticuisine.models.Materiel;
 import com.baticuisine.models.MainOeuvre;
@@ -15,8 +16,8 @@ import com.baticuisine.repositories.impl.DevisRepositoryImpl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class ConsoleUi {
@@ -27,6 +28,7 @@ public class ConsoleUi {
     public static void main(String[] args) {
         ClientService clientService = new ClientService();
         ComposantService composantService = new ComposantService();
+        projetService.chargerProjets();
 
         while (true) {
             System.out.println("=== Menu Principal ===");
@@ -35,30 +37,52 @@ public class ConsoleUi {
             System.out.println("3. Calculer le coût d'un projet");
             System.out.println("4. Quitter");
             System.out.print("Choisissez une option : ");
-            int option = Integer.parseInt(scanner.nextLine());
+            int option = validateIntegerInput();
 
-            if (option == 1) {
-                Client client = choisirClient(clientService);
-                if (client != null) {
-                    Projet projet = ajouterProjet(projetService, client);
-                    ajouterComposants(projet, composantService);
-                    projetService.mettreAJourCoutTotal(projet);
-                    appliquerTVA(projet);
-                    appliquerMargeBeneficiaire(projet);
-                    enregistrerDevis(projet);
-                } else {
-                    System.out.println("Impossible d'ajouter un projet sans client.");
-                }
-            } else if (option == 2) {
-                afficherProjets();
-            } else if (option == 3) {
-                afficherDetailsProjet();
-            } else if (option == 4) {
-                break;
-            } else {
-                System.out.println("Option invalide, veuillez réessayer.");
+            switch (option) {
+                case 1:
+                    Client client = choisirClient(clientService);
+                    if (client != null) {
+                        Projet projet = ajouterProjet(projetService, client);
+                        ajouterComposants(projet, composantService);
+                        projetService.mettreAJourCoutTotal(projet);
+                        appliquerTVA(projet);
+                        appliquerMargeBeneficiaire(projet);
+                        enregistrerDevis(projet);
+                    } else {
+                        System.out.println("Impossible d'ajouter un projet sans client.");
+                    }
+                    break;
+                case 2:
+                    afficherProjets();
+                    break;
+                case 3:
+                    afficherDetailsProjet();
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Option invalide, veuillez réessayer.");
             }
         }
+    }
+
+    private static void afficherDetailsProjet() {
+        System.out.print("Entrez le nom du projet : ");
+        String nomProjet = scanner.nextLine();
+
+        Optional<Projet> projetOpt = projetService.chercherProjetParNom(nomProjet);
+
+        projetOpt.ifPresentOrElse(
+                projet -> {
+                    System.out.println("Nom du projet : " + projet.getNomProjet());
+                    System.out.println("Client : " + projet.getClient().getNom());
+                    System.out.println("Adresse du chantier : " + projet.getClient().getAdresse());
+                    System.out.println("Surface : " + projet.getSurface() + " m²");
+                    projet.afficherResultats();
+                },
+                () -> System.out.println("Projet non trouvé.")
+        );
     }
 
     private static Client choisirClient(ClientService clientService) {
@@ -66,7 +90,7 @@ public class ConsoleUi {
         System.out.println("1. Chercher un client existant");
         System.out.println("2. Ajouter un nouveau client");
         System.out.print("Choisissez une option : ");
-        int option = Integer.parseInt(scanner.nextLine());
+        int option = validateIntegerInput();
 
         return (option == 1) ? chercherClientExistant(clientService) : ajouterNouveauClient(clientService);
     }
@@ -100,7 +124,7 @@ public class ConsoleUi {
         System.out.print("Entrez le numéro de téléphone du client : ");
         String telephone = scanner.nextLine();
         System.out.print("Le client est-il professionnel ? (true/false) : ");
-        boolean estProfessionnel = Boolean.parseBoolean(scanner.nextLine());
+        boolean estProfessionnel = validateBooleanInput();
 
         Client client = new Client(nom, adresse, telephone, estProfessionnel);
         clientService.ajouterClient(client);
@@ -113,11 +137,10 @@ public class ConsoleUi {
         System.out.print("Entrez le nom du projet : ");
         String nomProjet = scanner.nextLine();
         System.out.print("Entrez la surface de la cuisine (en m²) : ");
-        double surface = Double.parseDouble(scanner.nextLine());
+        double surface = validateDoubleInput();
 
         Projet projet = new Projet(nomProjet, surface, null, EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
-        System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
     }
 
@@ -127,13 +150,13 @@ public class ConsoleUi {
             System.out.print("Entrez le nom du matériau : ");
             String nomMateriel = scanner.nextLine();
             System.out.print("Entrez la quantité de ce matériau : ");
-            double quantite = Double.parseDouble(scanner.nextLine());
+            double quantite = validateDoubleInput();
             System.out.print("Entrez le coût unitaire de ce matériau : ");
-            double coutUnitaire = Double.parseDouble(scanner.nextLine());
+            double coutUnitaire = validateDoubleInput();
             System.out.print("Entrez le coût de transport de ce matériau : ");
-            double coutTransport = Double.parseDouble(scanner.nextLine());
+            double coutTransport = validateDoubleInput();
             System.out.print("Entrez le coefficient de qualité du matériau : ");
-            double coefficientQualite = Double.parseDouble(scanner.nextLine());
+            double coefficientQualite = validateDoubleInput();
 
             Materiel materiel = new Materiel(0, nomMateriel, "Matériel", 0.0, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
@@ -151,11 +174,11 @@ public class ConsoleUi {
             System.out.print("Entrez le type de main-d'œuvre : ");
             String nomMainOeuvre = scanner.nextLine();
             System.out.print("Entrez le taux horaire de cette main-d'œuvre : ");
-            double tauxHoraire = Double.parseDouble(scanner.nextLine());
+            double tauxHoraire = validateDoubleInput();
             System.out.print("Entrez le nombre d'heures travaillées : ");
-            double heuresTravail = Double.parseDouble(scanner.nextLine());
+            double heuresTravail = validateDoubleInput();
             System.out.print("Entrez le facteur de productivité : ");
-            double productiviteOuvrier = Double.parseDouble(scanner.nextLine());
+            double productiviteOuvrier = validateDoubleInput();
 
             MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", 0.0, projet.getId(), tauxHoraire, heuresTravail, productiviteOuvrier);
             projet.ajouterComposant(mainOeuvre);
@@ -173,7 +196,7 @@ public class ConsoleUi {
         System.out.print("Souhaitez-vous appliquer une TVA au projet ? (y/n) : ");
         if (scanner.nextLine().equalsIgnoreCase("y")) {
             System.out.print("Entrez le pourcentage de TVA (%) : ");
-            double pourcentageTVA = Double.parseDouble(scanner.nextLine());
+            double pourcentageTVA = validateDoubleInput();
 
             ComposantRepositoryImpl composantRepo = new ComposantRepositoryImpl();
             composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
@@ -187,7 +210,7 @@ public class ConsoleUi {
         System.out.print("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : ");
         if (scanner.nextLine().equalsIgnoreCase("y")) {
             System.out.print("Entrez le pourcentage de marge bénéficiaire (%) : ");
-            double nouvelleMarge = Double.parseDouble(scanner.nextLine());
+            double nouvelleMarge = validateDoubleInput();
 
             projet.setMargeBeneficiaire(nouvelleMarge);
             projetRepo.mettreAJourMargeBeneficiaire(projet.getId(), nouvelleMarge);
@@ -227,71 +250,75 @@ public class ConsoleUi {
     }
 
     private static void afficherProjets() {
-        try (ResultSet rs = projetRepo.recupererTousLesProjets()) {
-            int dernierProjetId = -1;  // Pour suivre le projet actuel
-            while (rs != null && rs.next()) {
-                int projetId = rs.getInt("projet_id");
+        try {
+            List<Projet> projets = projetRepo.recupererTousLesProjets();
+            int dernierProjetId = -1;
+
+            for (Projet projet : projets) {
+                int projetId = projet.getId();
 
                 if (projetId != dernierProjetId) {
                     if (dernierProjetId != -1) {
-                        // Séparation entre deux projets
                         System.out.println("-------------------------------");
                     }
-                    System.out.println("Nom du Projet: " + rs.getString("nom_projet"));
-                    System.out.println("Surface: " + rs.getDouble("surface") + " m²");
-                    System.out.println("Marge Bénéficiaire: " + rs.getDouble("margeBeneficiaire") + "%");
-                    System.out.println("Coût Total: " + rs.getDouble("coutTotal") + " €");
-                    System.out.println("État du Projet: " + rs.getString("etatProjet"));
-                    System.out.println("Nom du Client: " + rs.getString("client_nom"));
-                    System.out.println("Adresse: " + rs.getString("client_adresse"));
-                    System.out.println("Téléphone: " + rs.getString("client_telephone"));
+                    System.out.println("Nom du Projet: " + projet.getNomProjet());
+                    System.out.println("Surface: " + projet.getSurface() + " m²");
+                    System.out.println("Marge Bénéficiaire: " + projet.getMargeBeneficiaire() + "%");
+                    System.out.println("Coût Total: " + projet.getCoutTotal() + " €");
+                    System.out.println("État du Projet: " + projet.getEtatProjet().name());
+                    System.out.println("Nom du Client: " + projet.getClient().getNom());
+                    System.out.println("Adresse: " + projet.getClient().getAdresse());
+                    System.out.println("Téléphone: " + projet.getClient().getTelephone());
                     System.out.println();
                     System.out.println("__Ses composants__");
                     dernierProjetId = projetId;
                 }
 
-                System.out.println("Nom du Composant: " + rs.getString("composant_nom"));
-                System.out.println("Type du Composant: " + rs.getString("composant_type"));
-
-                if ("materiel".equalsIgnoreCase(rs.getString("composant_type"))) {
-                    System.out.println("Quantité: " + rs.getInt("quantite_materiel"));
-                    System.out.println("Coût Unitaire: " + rs.getDouble("cout_unitaire_materiel"));
-                    System.out.println("Coût Transport: " + rs.getDouble("cout_transport_materiel"));
-                    System.out.println("Coefficient Qualité: " + rs.getDouble("coefficient_qualite_materiel"));
+                for (Composant composant : projet.getComposants()) {
+                    System.out.println("Nom du Composant: " + composant.getNom());
+                    System.out.println("Type du Composant: " + composant.getType());
                 }
-
-                if ("Main d'œuvre".equalsIgnoreCase(rs.getString("composant_type"))) {
-                    System.out.println("Taux Horaire: " + rs.getDouble("taux_horaire_main_oeuvre"));
-                    System.out.println("Heures Travaillées: " + rs.getInt("heures_travail"));
-                    System.out.println("Productivité Ouvrier: " + rs.getDouble("productivite_ouvrier"));
-                }
-
-                System.out.println();
             }
 
             if (dernierProjetId != -1) {
                 System.out.println("-------------------------------");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Erreur lors de l'affichage des projets : " + e.getMessage());
         }
     }
 
-    private static void afficherDetailsProjet() {
-        System.out.print("Entrez le nom du projet : ");
-        String nomProjet = scanner.nextLine();
+    // Input validation methods
+    private static int validateIntegerInput() {
+        while (true) {
+            try {
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.print("Entrée invalide. Veuillez entrer un nombre entier : ");
+            }
+        }
+    }
 
-        Projet projet = projetService.chercherProjetParNom(nomProjet);
+    private static double validateDoubleInput() {
+        while (true) {
+            try {
+                return Double.parseDouble(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.print("Entrée invalide. Veuillez entrer un nombre valide : ");
+            }
+        }
+    }
 
-        if (projet != null) {
-            System.out.println("Nom du projet : " + projet.getNomProjet());
-            System.out.println("Client : " + projet.getClient().getNom());
-            System.out.println("Adresse du chantier : " + projet.getClient().getAdresse());
-            System.out.println("Surface : " + projet.getSurface() + " m²");
-
-            projet.afficherResultats();
-        } else {
-            System.out.println("Projet non trouvé.");
+    private static boolean validateBooleanInput() {
+        while (true) {
+            String input = scanner.nextLine();
+            if ("true".equalsIgnoreCase(input)) {
+                return true;
+            } else if ("false".equalsIgnoreCase(input)) {
+                return false;
+            } else {
+                System.out.print("Entrée invalide. Veuillez entrer 'true' ou 'false' : ");
+            }
         }
     }
 }

@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProjetRepositoryImpl implements ProjetRepository {
     private final Connection connection;
@@ -39,6 +41,7 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         }
     }
 
+    @Override
     public void mettreAJourCoutTotal(Projet projet) {
         String sql = "UPDATE Projet SET coutTotal = ? WHERE id = ?";
 
@@ -51,6 +54,7 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         }
     }
 
+    @Override
     public void mettreAJourMargeBeneficiaire(int projetId, double nouvelleMarge) {
         String sql = "UPDATE Projet SET margeBeneficiaire = ? WHERE id = ?";
 
@@ -63,6 +67,8 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             System.out.println("Erreur lors de la mise à jour de la marge bénéficiaire : " + e.getMessage());
         }
     }
+
+    @Override
     public void mettreAJourEtatProjet(Projet projet) {
         String sql = "UPDATE Projet SET etatProjet = ? WHERE id = ?";
 
@@ -76,7 +82,9 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         }
     }
 
-    public ResultSet recupererTousLesProjets() {
+    @Override
+    public List<Projet> recupererTousLesProjets() {
+        List<Projet> projets = new ArrayList<>();
         String sql = "SELECT " +
                 "p.id AS projet_id, " +
                 "p.nomProjet AS nom_projet, " +
@@ -87,33 +95,29 @@ public class ProjetRepositoryImpl implements ProjetRepository {
                 "c.id AS client_id, " +
                 "c.nom AS client_nom, " +
                 "c.adresse AS client_adresse, " +
-                "c.telephone AS client_telephone, " +
-                "comp.id AS composant_id, " +
-                "comp.nom AS composant_nom, " +
-                "comp.type AS composant_type, " +
-                "mo.tauxHoraire AS taux_horaire_main_oeuvre, " +
-                "mo.heuresTravail AS heures_travail, " +
-                "mo.productiviteOuvrier AS productivite_ouvrier, " +
-                "mat.quantite AS quantite_materiel, " +
-                "mat.coutUnitaire AS cout_unitaire_materiel, " +
-                "mat.coutTransport AS cout_transport_materiel, " +
-                "mat.coefficientQualite AS coefficient_qualite_materiel " +
+                "c.telephone AS client_telephone " +
                 "FROM Projet p " +
                 "LEFT JOIN Client c ON p.client_id = c.id " +
-                "LEFT JOIN Composant comp ON comp.projet_id = p.id " +
-                "LEFT JOIN MainOeuvre mo ON mo.composant_id = comp.id " +
-                "LEFT JOIN Materiel mat ON mat.composant_id = comp.id " +
                 "ORDER BY p.id";
 
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            return statement.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Projet projet = new Projet(
+                        resultSet.getString("nom_projet"),
+                        resultSet.getDouble("surface"),
+                        resultSet.getDouble("margeBeneficiaire"),
+                        Projet.EtatProjet.valueOf(resultSet.getString("etatProjet")),
+                        null
+                );
+                projet.setId(resultSet.getInt("projet_id"));
+                projet.setCoutTotal(resultSet.getDouble("coutTotal"));
+                projets.add(projet);
+            }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération des projets : " + e.getMessage());
-            return null;
         }
+        return projets;
     }
-
-
-
 }
