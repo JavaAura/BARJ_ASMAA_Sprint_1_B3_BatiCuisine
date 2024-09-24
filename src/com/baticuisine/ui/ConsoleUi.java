@@ -9,6 +9,7 @@ import com.baticuisine.services.ClientService;
 import com.baticuisine.services.ProjetService;
 import com.baticuisine.services.ComposantService;
 import com.baticuisine.repositories.impl.ComposantRepositoryImpl;
+import com.baticuisine.repositories.impl.ProjetRepositoryImpl;
 
 import java.util.Scanner;
 
@@ -39,7 +40,8 @@ public class ConsoleUi {
             Projet projet = ajouterProjet(projetService, client);
             ajouterComposants(projet, composantService);
             projetService.mettreAJourCoutTotal(projet);
-            appliquerTVA(projet); // Move this call here to apply VAT after components are added
+            appliquerTVA(projet);
+            appliquerMargeBeneficiaire(projet); // New margin function
         } else {
             System.out.println("Impossible d'ajouter un projet sans client.");
         }
@@ -160,6 +162,20 @@ public class ConsoleUi {
             composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
         } else {
             System.out.println("Aucune TVA appliquée.");
+        }
+    }
+
+    private static void appliquerMargeBeneficiaire(Projet projet) {
+        System.out.print("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : ");
+        if (scanner.nextLine().equalsIgnoreCase("y")) {
+            System.out.print("Entrez le pourcentage de marge bénéficiaire (%) : ");
+            double nouvelleMarge = Double.parseDouble(scanner.nextLine());
+
+            projet.setMargeBeneficiaire(nouvelleMarge);
+            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
+            projetRepo.mettreAJourMargeBeneficiaire(projet.getId(), nouvelleMarge);
+        } else {
+            System.out.println("Aucune marge bénéficiaire appliquée.");
         }
     }
 }

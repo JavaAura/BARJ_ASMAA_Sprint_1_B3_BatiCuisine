@@ -50,4 +50,17 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             System.out.println("Erreur lors de la mise à jour du coût total du projet : " + e.getMessage());
         }
     }
+
+    public void mettreAJourMargeBeneficiaire(int projetId, double nouvelleMarge) {
+        String sql = "UPDATE Projet SET margeBeneficiaire = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, nouvelleMarge);
+            statement.setInt(2, projetId);
+            statement.executeUpdate();
+            System.out.println("Marge bénéficiaire mise à jour avec succès : " + nouvelleMarge + "%.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la mise à jour de la marge bénéficiaire : " + e.getMessage());
+        }
+    }
 }
