@@ -8,6 +8,7 @@ import com.baticuisine.models.MainOeuvre;
 import com.baticuisine.services.ClientService;
 import com.baticuisine.services.ProjetService;
 import com.baticuisine.services.ComposantService;
+import com.baticuisine.repositories.impl.ComposantRepositoryImpl;
 
 import java.util.Scanner;
 
@@ -38,6 +39,7 @@ public class ConsoleUi {
             Projet projet = ajouterProjet(projetService, client);
             ajouterComposants(projet, composantService);
             projetService.mettreAJourCoutTotal(projet);
+            appliquerTVA(projet); // Move this call here to apply VAT after components are added
         } else {
             System.out.println("Impossible d'ajouter un projet sans client.");
         }
@@ -90,7 +92,7 @@ public class ConsoleUi {
 
         Double margeBeneficiaire = null; // Optional
 
-        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, Projet.EtatProjet.ENCOURS, client);
+        Projet projet = new Projet(nomProjet, surface, margeBeneficiaire, EtatProjet.ENCOURS, client);
         projetService.ajouterProjet(projet);
         System.out.println("Projet ajouté avec succès pour le client : " + client.getNom());
         return projet;
@@ -110,8 +112,8 @@ public class ConsoleUi {
             System.out.print("Entrez le coefficient de qualité du matériau : ");
             double coefficientQualite = Double.parseDouble(scanner.nextLine());
 
-            // Creating the material object without null for tauxTVA
-            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", null, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
+            // Creating the material object with default tauxTVA of 0.0
+            Materiel materiel = new Materiel(0, nomMateriel, "Matériel", 0.0, projet.getId(), quantite, coutUnitaire, coutTransport, coefficientQualite);
             projet.ajouterComposant(materiel);
             composantService.ajouterComposant(materiel);
             System.out.println("Matériau ajouté avec succès !");
@@ -133,7 +135,7 @@ public class ConsoleUi {
             System.out.print("Entrez le facteur de productivité : ");
             double productiviteOuvrier = Double.parseDouble(scanner.nextLine());
 
-            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", null, projet.getId(), tauxHoraire, heuresTravail, productiviteOuvrier);
+            MainOeuvre mainOeuvre = new MainOeuvre(0, nomMainOeuvre, "Main d'œuvre", 0.0, projet.getId(), tauxHoraire, heuresTravail, productiviteOuvrier);
             projet.ajouterComposant(mainOeuvre);
             composantService.ajouterComposant(mainOeuvre);
             System.out.println("Main-d'œuvre ajoutée avec succès !");
@@ -145,6 +147,19 @@ public class ConsoleUi {
         }
 
         projet.calculerCoutTotal();
+    }
 
+    private static void appliquerTVA(Projet projet) {
+        System.out.print("Souhaitez-vous appliquer une TVA au projet ? (y/n) : ");
+        if (scanner.nextLine().equalsIgnoreCase("y")) {
+            System.out.print("Entrez le pourcentage de TVA (%) : ");
+            double pourcentageTVA = Double.parseDouble(scanner.nextLine());
+
+            // Update TVA for all components in the project
+            ComposantRepositoryImpl composantRepo = new ComposantRepositoryImpl();
+            composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
+        } else {
+            System.out.println("Aucune TVA appliquée.");
+        }
     }
 }

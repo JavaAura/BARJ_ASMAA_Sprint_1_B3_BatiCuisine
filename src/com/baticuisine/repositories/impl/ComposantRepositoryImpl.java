@@ -18,7 +18,6 @@ public class ComposantRepositoryImpl implements ComposantRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
-
     @Override
     public void ajouterComposant(Composant composant) {
         String sql = "INSERT INTO Composant (nom, type, tauxTVA, projet_id) VALUES (?, ?, ?, ?) RETURNING id";
@@ -26,10 +25,11 @@ public class ComposantRepositoryImpl implements ComposantRepository {
             statement.setString(1, composant.getNom());
             statement.setString(2, composant.getType());
 
+            // Handle null for tauxTVA
             if (composant.getTauxTVA() != null) {
                 statement.setDouble(3, composant.getTauxTVA());
             } else {
-                statement.setNull(3, java.sql.Types.DOUBLE);
+                statement.setNull(3, java.sql.Types.DOUBLE); // Set SQL NULL if tauxTVA is null
             }
 
             statement.setInt(4, composant.getProjetId());
@@ -39,19 +39,35 @@ public class ComposantRepositoryImpl implements ComposantRepository {
                     int generatedId = rs.getInt(1);
                     composant.setId(generatedId);
 
-                    if (composant instanceof Materiel) {
+                    // Add logic for Materiel and MainOeuvre if needed
+                    if (composant instanceof Materiel materiel) {
                         MaterielRepositoryImpl materielRepo = new MaterielRepositoryImpl();
-                        ((Materiel) composant).setId(generatedId);
-                        materielRepo.ajouterMateriel((Materiel) composant);
-                    } else if (composant instanceof MainOeuvre) {
+                        materiel.setId(generatedId);
+                        materielRepo.ajouterMateriel(materiel);
+                    } else if (composant instanceof MainOeuvre mainOeuvre) {
                         MainOeuvreRepositoryImpl mainOeuvreRepo = new MainOeuvreRepositoryImpl();
-                        ((MainOeuvre) composant).setId(generatedId);
-                        mainOeuvreRepo.ajouterMainOeuvre((MainOeuvre) composant);
+                        mainOeuvre.setId(generatedId);
+                        mainOeuvreRepo.ajouterMainOeuvre(mainOeuvre);
                     }
                 }
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'ajout du composant : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void mettreAJourTauxTVA(int projetId, double nouveauTauxTVA) {
+        String sql = "UPDATE Composant SET tauxTVA = ? WHERE projet_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, nouveauTauxTVA);
+            statement.setInt(2, projetId);
+
+            int rowsUpdated = statement.executeUpdate();
+            System.out.println(rowsUpdated + " composants mis à jour avec succès avec le taux de TVA : " + nouveauTauxTVA + "%.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la mise à jour des taux de TVA : " + e.getMessage());
         }
     }
 }

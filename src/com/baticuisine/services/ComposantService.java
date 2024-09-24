@@ -14,4 +14,8 @@ public class ComposantService {
     public void ajouterComposant(Composant composant) {
         composantRepository.ajouterComposant(composant);
     }
+
+    public void mettreAJourTauxTVA(int projetId, double nouveauTauxTVA) {
+        composantRepository.mettreAJourTauxTVA(projetId, nouveauTauxTVA);
+    }
 }
