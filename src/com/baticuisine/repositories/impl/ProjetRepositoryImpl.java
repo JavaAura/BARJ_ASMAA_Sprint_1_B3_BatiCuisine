@@ -76,4 +76,40 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         }
     }
 
+    public ResultSet recupererTousLesProjets() {
+        String sql = "SELECT " +
+                "p.id AS projet_id, " +
+                "p.nomProjet AS nom_projet, " +
+                "p.surface, " +
+                "p.margeBeneficiaire, " +
+                "p.coutTotal, " +
+                "p.etatProjet, " +
+                "c.id AS client_id, " +
+                "c.nom AS client_nom, " +
+                "c.adresse AS client_adresse, " +
+                "c.telephone AS client_telephone, " +
+                "d.id AS devis_id, " +
+                "d.montantEstime, " +
+                "d.dateEmission, " +
+                "d.dateValidite, " +
+                "d.accepte AS devis_accepte, " +
+                "comp.id AS composant_id, " +
+                "comp.nom AS composant_nom, " +
+                "comp.type AS composant_type " +
+                "FROM Projet p " +
+                "LEFT JOIN Client c ON p.client_id = c.id " +
+                "LEFT JOIN Devis d ON d.projet_id = p.id " +
+                "LEFT JOIN Composant comp ON comp.projet_id = p.id " +
+                "ORDER BY p.id";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération des projets : " + e.getMessage());
+            return null;
+        }
+    }
+
+
 }

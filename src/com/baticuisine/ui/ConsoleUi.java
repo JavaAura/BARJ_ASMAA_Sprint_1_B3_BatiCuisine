@@ -12,44 +12,69 @@ import com.baticuisine.services.ComposantService;
 import com.baticuisine.repositories.impl.ComposantRepositoryImpl;
 import com.baticuisine.repositories.impl.ProjetRepositoryImpl;
 import com.baticuisine.repositories.impl.DevisRepositoryImpl;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class ConsoleUi {
     private static final Scanner scanner = new Scanner(System.in);
+    private static final ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
 
     public static void main(String[] args) {
         ClientService clientService = new ClientService();
         ProjetService projetService = new ProjetService();
         ComposantService composantService = new ComposantService();
 
-        System.out.println("=== Ajout d'un projet ===");
+        while (true) {
+            System.out.println("=== Menu Principal ===");
+            System.out.println("1. Créer un nouveau projet");
+            System.out.println("2. Afficher les projets existants");
+            System.out.println("3. Quitter");
+            System.out.print("Choisissez une option : ");
+            int option = Integer.parseInt(scanner.nextLine());
+
+            if (option == 1) {
+                // Créer un nouveau projet
+                Client client = choisirClient(clientService);
+                if (client != null) {
+                    Projet projet = ajouterProjet(projetService, client);
+                    ajouterComposants(projet, composantService);
+                    projetService.mettreAJourCoutTotal(projet);
+                    appliquerTVA(projet);
+                    appliquerMargeBeneficiaire(projet);
+                    enregistrerDevis(projet);
+                } else {
+                    System.out.println("Impossible d'ajouter un projet sans client.");
+                }
+            } else if (option == 2) {
+                // Afficher les projets existants
+                afficherProjets();
+            } else if (option == 3) {
+                break; // Quitter
+            } else {
+                System.out.println("Option invalide, veuillez réessayer.");
+            }
+        }
+    }
+
+    private static Client choisirClient(ClientService clientService) {
         System.out.println("Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?");
         System.out.println("1. Chercher un client existant");
         System.out.println("2. Ajouter un nouveau client");
         System.out.print("Choisissez une option : ");
-
         int option = Integer.parseInt(scanner.nextLine());
-        Client client = (option == 1) ? chercherClientExistant(clientService) : ajouterNouveauClient(clientService);
 
-        if (client != null) {
-            Projet projet = ajouterProjet(projetService, client);
-            ajouterComposants(projet, composantService);
-            projetService.mettreAJourCoutTotal(projet);
-            appliquerTVA(projet);
-            appliquerMargeBeneficiaire(projet);
-            enregistrerDevis(projet);
-        } else {
-            System.out.println("Impossible d'ajouter un projet sans client.");
-        }
+        return (option == 1) ? chercherClientExistant(clientService) : ajouterNouveauClient(clientService);
     }
 
     private static Client chercherClientExistant(ClientService clientService) {
         System.out.print("Entrez le nom du client : ");
         String nomClient = scanner.nextLine();
-
         Client client = clientService.chercherClientParNom(nomClient);
+
         if (client != null) {
             System.out.println("Client trouvé !");
             System.out.println("Nom : " + client.getNom());
@@ -151,7 +176,6 @@ public class ConsoleUi {
 
             ComposantRepositoryImpl composantRepo = new ComposantRepositoryImpl();
             composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
-
             projet.calculerCoutTotal();
         } else {
             System.out.println("Aucune TVA appliquée.");
@@ -170,11 +194,9 @@ public class ConsoleUi {
         } else {
             System.out.println("Aucune marge bénéficiaire appliquée.");
         }
-
         projet.afficherResultats();
-
-
     }
+
     private static void enregistrerDevis(Projet projet) {
         System.out.println("--- Enregistrement du Devis ---");
         System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
@@ -195,16 +217,43 @@ public class ConsoleUi {
         if (choix.equalsIgnoreCase("y")) {
             devisRepo.enregistrerDevis(devis);
             projet.setEtatProjet(Projet.EtatProjet.TERMINE);
-            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
             projetRepo.mettreAJourEtatProjet(projet);
             System.out.println("Devis enregistré avec succès et projet marqué comme terminé.");
         } else {
             projet.setEtatProjet(Projet.EtatProjet.ANNULE);
-            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
             projetRepo.mettreAJourEtatProjet(projet);
             System.out.println("Devis non enregistré, projet annulé.");
         }
     }
 
+    private static void afficherProjets() {
+        try (ResultSet rs = projetRepo.recupererTousLesProjets()) {
+            while (rs != null && rs.next()) {
+                System.out.println("ID Projet: " + rs.getInt("projet_id"));
+                System.out.println("Nom du Projet: " + rs.getString("nom_projet"));
+                System.out.println("Surface: " + rs.getDouble("surface") + " m²");
+                System.out.println("Marge Bénéficiaire: " + rs.getDouble("margeBeneficiaire") + "%");
+                System.out.println("Coût Total: " + rs.getDouble("coutTotal") + " €");
+                System.out.println("État du Projet: " + rs.getString("etatProjet"));
 
+                System.out.println("Client ID: " + rs.getInt("client_id"));
+                System.out.println("Nom du Client: " + rs.getString("client_nom"));
+                System.out.println("Adresse: " + rs.getString("client_adresse"));
+                System.out.println("Téléphone: " + rs.getString("client_telephone"));
+
+                System.out.println("Devis ID: " + rs.getInt("devis_id"));
+                System.out.println("Montant Estimé: " + rs.getDouble("montantEstime") + " €");
+                System.out.println("Date d'Émission: " + rs.getDate("dateEmission"));
+                System.out.println("Date de Validité: " + rs.getDate("dateValidite"));
+                System.out.println("Devis Accepté: " + rs.getBoolean("devis_accepte"));
+
+                System.out.println("ID Composant: " + rs.getInt("composant_id"));
+                System.out.println("Nom du Composant: " + rs.getString("composant_nom"));
+                System.out.println("Type du Composant: " + rs.getString("composant_type"));
+                System.out.println("-------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de l'affichage des projets : " + e.getMessage());
+        }
+    }
 }
