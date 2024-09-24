@@ -8,7 +8,7 @@ public class Devis {
     private LocalDate dateEmission;
     private LocalDate dateValidite;
     private boolean accepte;
-    private int projetId;  //
+    private int projetId;
 
     public Devis(int id, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, int projetId) {
         this.id = id;
@@ -19,7 +19,6 @@ public class Devis {
         this.projetId = projetId;
     }
 
-    // Getters et setters
     public int getId() {
         return id;
     }

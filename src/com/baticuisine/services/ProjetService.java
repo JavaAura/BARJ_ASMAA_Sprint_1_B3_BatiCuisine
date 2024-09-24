@@ -20,6 +20,8 @@ public class ProjetService {
     }
 
     public void mettreAJourMargeBeneficiaire(int projetId, double nouvelleMarge) {
-        projetRepository.mettreAJourMargeBeneficiaire(projetId, nouvelleMarge); // New method for margin
+        projetRepository.mettreAJourMargeBeneficiaire(projetId, nouvelleMarge);
     }
+
+
 }

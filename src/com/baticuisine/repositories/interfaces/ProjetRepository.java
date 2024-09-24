@@ -5,5 +5,7 @@ import com.baticuisine.models.Projet;
 public interface ProjetRepository {
     void ajouterProjet(Projet projet);
     void mettreAJourCoutTotal(Projet projet);
-    void mettreAJourMargeBeneficiaire(int projetId, double nouvelleMarge); // New method
-}
+    void mettreAJourMargeBeneficiaire(int projetId, double nouvelleMarge);
+    public void mettreAJourEtatProjet(Projet projet) ;
+
+    }

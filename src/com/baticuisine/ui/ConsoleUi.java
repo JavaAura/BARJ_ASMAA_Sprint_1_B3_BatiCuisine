@@ -2,6 +2,7 @@ package com.baticuisine.ui;
 
 import com.baticuisine.models.Client;
 import com.baticuisine.models.Projet;
+import com.baticuisine.models.Devis;
 import com.baticuisine.models.Projet.EtatProjet;
 import com.baticuisine.models.Materiel;
 import com.baticuisine.models.MainOeuvre;
@@ -10,7 +11,9 @@ import com.baticuisine.services.ProjetService;
 import com.baticuisine.services.ComposantService;
 import com.baticuisine.repositories.impl.ComposantRepositoryImpl;
 import com.baticuisine.repositories.impl.ProjetRepositoryImpl;
-
+import com.baticuisine.repositories.impl.DevisRepositoryImpl;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class ConsoleUi {
@@ -36,6 +39,7 @@ public class ConsoleUi {
             projetService.mettreAJourCoutTotal(projet);
             appliquerTVA(projet);
             appliquerMargeBeneficiaire(projet);
+            enregistrerDevis(projet);
         } else {
             System.out.println("Impossible d'ajouter un projet sans client.");
         }
@@ -168,5 +172,39 @@ public class ConsoleUi {
         }
 
         projet.afficherResultats();
+
+
     }
+    private static void enregistrerDevis(Projet projet) {
+        System.out.println("--- Enregistrement du Devis ---");
+        System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
+        String dateEmissionStr = scanner.nextLine();
+        System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
+        String dateValiditeStr = scanner.nextLine();
+
+        LocalDate dateEmission = LocalDate.parse(dateEmissionStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate dateValidite = LocalDate.parse(dateValiditeStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
+        String choix = scanner.nextLine();
+
+        Devis devis = new Devis(0, projet.getCoutTotal(), dateEmission, dateValidite, choix.equalsIgnoreCase("y"), projet.getId());
+
+        DevisRepositoryImpl devisRepo = new DevisRepositoryImpl();
+
+        if (choix.equalsIgnoreCase("y")) {
+            devisRepo.enregistrerDevis(devis);
+            projet.setEtatProjet(Projet.EtatProjet.TERMINE);
+            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
+            projetRepo.mettreAJourEtatProjet(projet);
+            System.out.println("Devis enregistré avec succès et projet marqué comme terminé.");
+        } else {
+            projet.setEtatProjet(Projet.EtatProjet.ANNULE);
+            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
+            projetRepo.mettreAJourEtatProjet(projet);
+            System.out.println("Devis non enregistré, projet annulé.");
+        }
+    }
+
+
 }
