@@ -22,22 +22,22 @@ import java.util.Scanner;
 public class ConsoleUi {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
+    private static final ProjetService projetService = new ProjetService();
 
     public static void main(String[] args) {
         ClientService clientService = new ClientService();
-        ProjetService projetService = new ProjetService();
         ComposantService composantService = new ComposantService();
 
         while (true) {
             System.out.println("=== Menu Principal ===");
             System.out.println("1. Créer un nouveau projet");
             System.out.println("2. Afficher les projets existants");
-            System.out.println("3. Quitter");
+            System.out.println("3. Calculer le coût d'un projet");
+            System.out.println("4. Quitter");
             System.out.print("Choisissez une option : ");
             int option = Integer.parseInt(scanner.nextLine());
 
             if (option == 1) {
-                // Créer un nouveau projet
                 Client client = choisirClient(clientService);
                 if (client != null) {
                     Projet projet = ajouterProjet(projetService, client);
@@ -50,10 +50,11 @@ public class ConsoleUi {
                     System.out.println("Impossible d'ajouter un projet sans client.");
                 }
             } else if (option == 2) {
-                // Afficher les projets existants
                 afficherProjets();
             } else if (option == 3) {
-                break; // Quitter
+                afficherDetailsProjet();
+            } else if (option == 4) {
+                break;
             } else {
                 System.out.println("Option invalide, veuillez réessayer.");
             }
@@ -189,7 +190,6 @@ public class ConsoleUi {
             double nouvelleMarge = Double.parseDouble(scanner.nextLine());
 
             projet.setMargeBeneficiaire(nouvelleMarge);
-            ProjetRepositoryImpl projetRepo = new ProjetRepositoryImpl();
             projetRepo.mettreAJourMargeBeneficiaire(projet.getId(), nouvelleMarge);
         } else {
             System.out.println("Aucune marge bénéficiaire appliquée.");
@@ -277,4 +277,21 @@ public class ConsoleUi {
         }
     }
 
+    private static void afficherDetailsProjet() {
+        System.out.print("Entrez le nom du projet : ");
+        String nomProjet = scanner.nextLine();
+
+        Projet projet = projetService.chercherProjetParNom(nomProjet);
+
+        if (projet != null) {
+            System.out.println("Nom du projet : " + projet.getNomProjet());
+            System.out.println("Client : " + projet.getClient().getNom());
+            System.out.println("Adresse du chantier : " + projet.getClient().getAdresse());
+            System.out.println("Surface : " + projet.getSurface() + " m²");
+
+            projet.afficherResultats();
+        } else {
+            System.out.println("Projet non trouvé.");
+        }
+    }
 }
