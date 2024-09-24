@@ -148,7 +148,6 @@ public class ConsoleUi {
             }
         }
 
-        projet.calculerCoutTotal();
     }
 
     private static void appliquerTVA(Projet projet) {
@@ -157,7 +156,6 @@ public class ConsoleUi {
             System.out.print("Entrez le pourcentage de TVA (%) : ");
             double pourcentageTVA = Double.parseDouble(scanner.nextLine());
 
-            // Update TVA for all components in the project
             ComposantRepositoryImpl composantRepo = new ComposantRepositoryImpl();
             composantRepo.mettreAJourTauxTVA(projet.getId(), pourcentageTVA);
         } else {
