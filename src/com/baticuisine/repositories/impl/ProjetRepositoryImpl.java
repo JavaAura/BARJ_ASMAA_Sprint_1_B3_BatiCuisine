@@ -88,18 +88,21 @@ public class ProjetRepositoryImpl implements ProjetRepository {
                 "c.nom AS client_nom, " +
                 "c.adresse AS client_adresse, " +
                 "c.telephone AS client_telephone, " +
-                "d.id AS devis_id, " +
-                "d.montantEstime, " +
-                "d.dateEmission, " +
-                "d.dateValidite, " +
-                "d.accepte AS devis_accepte, " +
                 "comp.id AS composant_id, " +
                 "comp.nom AS composant_nom, " +
-                "comp.type AS composant_type " +
+                "comp.type AS composant_type, " +
+                "mo.tauxHoraire AS taux_horaire_main_oeuvre, " +
+                "mo.heuresTravail AS heures_travail, " +
+                "mo.productiviteOuvrier AS productivite_ouvrier, " +
+                "mat.quantite AS quantite_materiel, " +
+                "mat.coutUnitaire AS cout_unitaire_materiel, " +
+                "mat.coutTransport AS cout_transport_materiel, " +
+                "mat.coefficientQualite AS coefficient_qualite_materiel " +
                 "FROM Projet p " +
                 "LEFT JOIN Client c ON p.client_id = c.id " +
-                "LEFT JOIN Devis d ON d.projet_id = p.id " +
                 "LEFT JOIN Composant comp ON comp.projet_id = p.id " +
+                "LEFT JOIN MainOeuvre mo ON mo.composant_id = comp.id " +
+                "LEFT JOIN Materiel mat ON mat.composant_id = comp.id " +
                 "ORDER BY p.id";
 
         try {
@@ -110,6 +113,7 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             return null;
         }
     }
+
 
 
 }

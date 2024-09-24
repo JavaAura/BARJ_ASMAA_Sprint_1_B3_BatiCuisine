@@ -228,32 +228,53 @@ public class ConsoleUi {
 
     private static void afficherProjets() {
         try (ResultSet rs = projetRepo.recupererTousLesProjets()) {
+            int dernierProjetId = -1;  // Pour suivre le projet actuel
             while (rs != null && rs.next()) {
-                System.out.println("ID Projet: " + rs.getInt("projet_id"));
-                System.out.println("Nom du Projet: " + rs.getString("nom_projet"));
-                System.out.println("Surface: " + rs.getDouble("surface") + " m²");
-                System.out.println("Marge Bénéficiaire: " + rs.getDouble("margeBeneficiaire") + "%");
-                System.out.println("Coût Total: " + rs.getDouble("coutTotal") + " €");
-                System.out.println("État du Projet: " + rs.getString("etatProjet"));
+                int projetId = rs.getInt("projet_id");
 
-                System.out.println("Client ID: " + rs.getInt("client_id"));
-                System.out.println("Nom du Client: " + rs.getString("client_nom"));
-                System.out.println("Adresse: " + rs.getString("client_adresse"));
-                System.out.println("Téléphone: " + rs.getString("client_telephone"));
+                if (projetId != dernierProjetId) {
+                    if (dernierProjetId != -1) {
+                        // Séparation entre deux projets
+                        System.out.println("-------------------------------");
+                    }
+                    System.out.println("Nom du Projet: " + rs.getString("nom_projet"));
+                    System.out.println("Surface: " + rs.getDouble("surface") + " m²");
+                    System.out.println("Marge Bénéficiaire: " + rs.getDouble("margeBeneficiaire") + "%");
+                    System.out.println("Coût Total: " + rs.getDouble("coutTotal") + " €");
+                    System.out.println("État du Projet: " + rs.getString("etatProjet"));
+                    System.out.println("Nom du Client: " + rs.getString("client_nom"));
+                    System.out.println("Adresse: " + rs.getString("client_adresse"));
+                    System.out.println("Téléphone: " + rs.getString("client_telephone"));
+                    System.out.println();
+                    System.out.println("__Ses composants__");
+                    dernierProjetId = projetId;
+                }
 
-                System.out.println("Devis ID: " + rs.getInt("devis_id"));
-                System.out.println("Montant Estimé: " + rs.getDouble("montantEstime") + " €");
-                System.out.println("Date d'Émission: " + rs.getDate("dateEmission"));
-                System.out.println("Date de Validité: " + rs.getDate("dateValidite"));
-                System.out.println("Devis Accepté: " + rs.getBoolean("devis_accepte"));
-
-                System.out.println("ID Composant: " + rs.getInt("composant_id"));
                 System.out.println("Nom du Composant: " + rs.getString("composant_nom"));
                 System.out.println("Type du Composant: " + rs.getString("composant_type"));
+
+                if ("materiel".equalsIgnoreCase(rs.getString("composant_type"))) {
+                    System.out.println("Quantité: " + rs.getInt("quantite_materiel"));
+                    System.out.println("Coût Unitaire: " + rs.getDouble("cout_unitaire_materiel"));
+                    System.out.println("Coût Transport: " + rs.getDouble("cout_transport_materiel"));
+                    System.out.println("Coefficient Qualité: " + rs.getDouble("coefficient_qualite_materiel"));
+                }
+
+                if ("Main d'œuvre".equalsIgnoreCase(rs.getString("composant_type"))) {
+                    System.out.println("Taux Horaire: " + rs.getDouble("taux_horaire_main_oeuvre"));
+                    System.out.println("Heures Travaillées: " + rs.getInt("heures_travail"));
+                    System.out.println("Productivité Ouvrier: " + rs.getDouble("productivite_ouvrier"));
+                }
+
+                System.out.println();
+            }
+
+            if (dernierProjetId != -1) {
                 System.out.println("-------------------------------");
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de l'affichage des projets : " + e.getMessage());
         }
     }
+
 }
