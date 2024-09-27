@@ -14,11 +14,6 @@ public class ProjetService {
 
     public ProjetService() {
         this.projetRepository = new ProjetRepositoryImpl();
-        chargerProjets();
-    }
-
-    public void chargerProjets() {
-        projetRepository.recupererTousLesProjets().forEach(projet -> projetMap.put(projet.getNomProjet(), projet));
     }
 
     public void ajouterProjet(Projet projet) {
@@ -27,11 +22,15 @@ public class ProjetService {
     }
 
     public Optional<Projet> chercherProjetParNom(String nomProjet) {
-        return Optional.ofNullable(projetMap.get(nomProjet));
+        return projetRepository.findByName(nomProjet);
     }
 
     public void mettreAJourCoutTotal(Projet projet) {
         projetRepository.mettreAJourCoutTotal(projet);
         projetMap.put(projet.getNomProjet(), projet);
+    }
+
+    public Optional<Projet> findByName(String nomProjet) {
+        return Optional.ofNullable(projetMap.get(nomProjet));  // Fetches the project by name
     }
 }

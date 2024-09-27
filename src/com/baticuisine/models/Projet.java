@@ -11,6 +11,7 @@ public class Projet {
     private double coutTotal;
     private EtatProjet etatProjet;
     private Client client;
+    private Devis devis;
     private final List<Composant> composants = new ArrayList<>();
 
     public enum EtatProjet {
@@ -28,81 +29,15 @@ public class Projet {
 
     public void ajouterComposant(Composant composant) {
         composants.add(composant);
-        calculerCoutTotal();
     }
 
-    public void calculerCoutTotal() {
-        double totalMateriaux = composants.stream()
-                .filter(composant -> composant instanceof Materiel)
-                .mapToDouble(composant -> {
-                    Materiel materiel = (Materiel) composant;
-                    return (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
-                })
-                .sum();
-
-        double totalMainOeuvre = composants.stream()
-                .filter(composant -> composant instanceof MainOeuvre)
-                .mapToDouble(composant -> {
-                    MainOeuvre mainOeuvre = (MainOeuvre) composant;
-                    return mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
-                })
-                .sum();
-
-        double totalMateriauxAvecTVA = totalMateriaux +
-                composants.stream()
-                        .filter(composant -> composant instanceof Materiel)
-                        .mapToDouble(composant -> {
-                            Materiel materiel = (Materiel) composant;
-                            return (materiel.getTauxTVA() != null) ? totalMateriaux * (materiel.getTauxTVA() / 100) : 0;
-                        })
-                        .sum();
-
-        double totalMainOeuvreAvecTVA = totalMainOeuvre +
-                composants.stream()
-                        .filter(composant -> composant instanceof MainOeuvre)
-                        .mapToDouble(composant -> {
-                            MainOeuvre mainOeuvre = (MainOeuvre) composant;
-                            return (mainOeuvre.getTauxTVA() != null) ? totalMainOeuvre * (mainOeuvre.getTauxTVA() / 100) : 0;
-                        })
-                        .sum();
-
-        this.coutTotal = totalMateriauxAvecTVA + totalMainOeuvreAvecTVA;
+    public Devis getDevis() { // Ensure this method exists
+        return devis;
     }
 
-    public void afficherResultats() {
-        double totalMateriaux = composants.stream()
-                .filter(composant -> composant instanceof Materiel)
-                .mapToDouble(composant -> {
-                    Materiel materiel = (Materiel) composant;
-                    return (materiel.getCoutUnitaire() * materiel.getQuantite()) + materiel.getCoutTransport();
-                })
-                .sum();
-
-        double totalMainOeuvre = composants.stream()
-                .filter(composant -> composant instanceof MainOeuvre)
-                .mapToDouble(composant -> {
-                    MainOeuvre mainOeuvre = (MainOeuvre) composant;
-                    return mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
-                })
-                .sum();
-
-        double totalMateriauxAvecTVA = totalMateriaux * 1.2;
-        double totalMainOeuvreAvecTVA = totalMainOeuvre * 1.2;
-        double totalAvantMarge = totalMateriauxAvecTVA + totalMainOeuvreAvecTVA;
-
-        double margeBeneficiaire = totalAvantMarge * (this.margeBeneficiaire / 100);
-        double coutTotalFinal = totalAvantMarge + margeBeneficiaire;
-
-        System.out.println("--- Résultat du Calcul ---");
-        System.out.println("Coût total des matériaux avant TVA : " + totalMateriaux + " €");
-        System.out.println("Coût total des matériaux avec TVA : " + totalMateriauxAvecTVA + " €");
-        System.out.println("Coût total de la main-d'œuvre avant TVA : " + totalMainOeuvre + " €");
-        System.out.println("Coût total de la main-d'œuvre avec TVA : " + totalMainOeuvreAvecTVA + " €");
-        System.out.println("Coût total avant marge : " + totalAvantMarge + " €");
-        System.out.println("Marge bénéficiaire (" + this.margeBeneficiaire + "%) : " + margeBeneficiaire + " €");
-        System.out.println("Coût total final du projet : " + coutTotalFinal + " €");
+    public void setDevis(Devis devis) { // Optional: a setter if you want to set the devis
+        this.devis = devis;
     }
-
     // Getters and setters
     public int getId() {
         return id;
@@ -161,4 +96,9 @@ public class Projet {
     public List<Composant> getComposants() {
         return composants;
     }
+    public void setComposants(List<Composant> composants) {
+        this.composants.clear();
+        this.composants.addAll(composants);
+    }
+
 }

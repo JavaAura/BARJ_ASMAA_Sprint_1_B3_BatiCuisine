@@ -1,6 +1,8 @@
 package com.baticuisine.repositories.interfaces;
 
 import com.baticuisine.models.Composant;
+import java.util.List;
+
 
 public interface ComposantRepository {
     void ajouterComposant(Composant composant);

@@ -1,15 +1,15 @@
 package com.baticuisine.repositories.impl;
 
 import com.baticuisine.config.DatabaseConnection;
+import com.baticuisine.models.Client;
 import com.baticuisine.models.Projet;
 import com.baticuisine.repositories.interfaces.ProjetRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Optional;
 
 public class ProjetRepositoryImpl implements ProjetRepository {
     private final Connection connection;
@@ -82,9 +82,7 @@ public class ProjetRepositoryImpl implements ProjetRepository {
         }
     }
 
-    @Override
-    public List<Projet> recupererTousLesProjets() {
-        List<Projet> projets = new ArrayList<>();
+    public ResultSet recupererTousLesProjets() {
         String sql = "SELECT " +
                 "p.id AS projet_id, " +
                 "p.nomProjet AS nom_projet, " +
@@ -95,29 +93,94 @@ public class ProjetRepositoryImpl implements ProjetRepository {
                 "c.id AS client_id, " +
                 "c.nom AS client_nom, " +
                 "c.adresse AS client_adresse, " +
-                "c.telephone AS client_telephone " +
+                "c.telephone AS client_telephone, " +
+                "comp.id AS composant_id, " +
+                "comp.nom AS composant_nom, " +
+                "comp.type AS composant_type, " +
+                "mo.tauxHoraire AS taux_horaire_main_oeuvre, " +
+                "mo.heuresTravail AS heures_travail, " +
+                "mo.productiviteOuvrier AS productivite_ouvrier, " +
+                "mat.quantite AS quantite_materiel, " +
+                "mat.coutUnitaire AS cout_unitaire_materiel, " +
+                "mat.coutTransport AS cout_transport_materiel, " +
+                "mat.coefficientQualite AS coefficient_qualite_materiel " +
                 "FROM Projet p " +
                 "LEFT JOIN Client c ON p.client_id = c.id " +
+                "LEFT JOIN Composant comp ON comp.projet_id = p.id " +
+                "LEFT JOIN MainOeuvre mo ON mo.composant_id = comp.id " +
+                "LEFT JOIN Materiel mat ON mat.composant_id = comp.id " +
                 "ORDER BY p.id";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération des projets : " + e.getMessage());
+            return null;
+        }
+    }
 
-            while (resultSet.next()) {
+    @Override
+    public Optional<Projet> findByIdWithDetails(int projetId) {
+        String query = "SELECT p.*, c.nom AS client_nom, c.adresse AS client_adresse, c.telephone AS client_telephone " +
+                "FROM Projet p " +
+                "JOIN Client c ON p.client_id = c.id " +
+                "WHERE p.id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, projetId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
                 Projet projet = new Projet(
-                        resultSet.getString("nom_projet"),
+                        resultSet.getString("nomProjet"),
                         resultSet.getDouble("surface"),
                         resultSet.getDouble("margeBeneficiaire"),
                         Projet.EtatProjet.valueOf(resultSet.getString("etatProjet")),
-                        null
+                        new Client(
+                                resultSet.getString("client_nom"),
+                                resultSet.getString("client_adresse"),
+                                resultSet.getString("client_telephone"),
+                                false
+                        )
                 );
-                projet.setId(resultSet.getInt("projet_id"));
-                projet.setCoutTotal(resultSet.getDouble("coutTotal"));
-                projets.add(projet);
+                projet.setId(resultSet.getInt("id")); // Set the project ID
+                return Optional.of(projet);
             }
         } catch (SQLException e) {
-            System.out.println("Erreur lors de la récupération des projets : " + e.getMessage());
+            System.out.println("Erreur lors de la récupération du projet avec les détails : " + e.getMessage());
         }
-        return projets;
+        return Optional.empty();
     }
+
+    public Optional<Projet> findByName(String nomProjet) {
+        String sql = "SELECT p.*, c.nom AS client_nom, c.adresse AS client_adresse, c.telephone AS client_telephone " +
+                "FROM Projet p " +
+                "LEFT JOIN Client c ON p.client_id = c.id " +
+                "WHERE p.nomProjet = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, nomProjet);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Projet projet = new Projet(
+                        resultSet.getString("nomProjet"),
+                        resultSet.getDouble("surface"),
+                        resultSet.getDouble("margeBeneficiaire"),
+                        Projet.EtatProjet.valueOf(resultSet.getString("etatProjet")),
+                        new Client(
+                                resultSet.getString("client_nom"),
+                                resultSet.getString("client_adresse"),
+                                resultSet.getString("client_telephone"),
+                                false
+                        )
+                );
+                projet.setId(resultSet.getInt("id"));
+                return Optional.of(projet);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la recherche du projet par nom : " + e.getMessage());
+        }
+        return Optional.empty();
+    }
+
 }

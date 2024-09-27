@@ -19,6 +19,7 @@ public class Devis {
         this.projetId = projetId;
     }
 
+
     public int getId() {
         return id;
     }

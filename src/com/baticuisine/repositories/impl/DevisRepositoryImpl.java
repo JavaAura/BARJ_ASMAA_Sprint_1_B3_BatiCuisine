@@ -2,18 +2,20 @@ package com.baticuisine.repositories.impl;
 
 import com.baticuisine.config.DatabaseConnection;
 import com.baticuisine.models.Devis;
+import com.baticuisine.repositories.interfaces.DevisRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class DevisRepositoryImpl {
+public class DevisRepositoryImpl implements DevisRepository {
     private final Connection connection;
 
     public DevisRepositoryImpl() {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
+    @Override
     public void enregistrerDevis(Devis devis) {
         String sql = "INSERT INTO Devis (montantEstime, dateEmission, dateValidite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
 
