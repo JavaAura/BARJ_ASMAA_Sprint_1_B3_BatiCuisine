@@ -31,11 +31,11 @@ public class Projet {
         composants.add(composant);
     }
 
-    public Devis getDevis() { // Ensure this method exists
+    public Devis getDevis() {
         return devis;
     }
 
-    public void setDevis(Devis devis) { // Optional: a setter if you want to set the devis
+    public void setDevis(Devis devis) {
         this.devis = devis;
     }
     // Getters and setters
