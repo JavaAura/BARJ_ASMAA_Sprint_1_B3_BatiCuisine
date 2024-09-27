@@ -181,6 +181,7 @@ public class ProjetRepositoryImpl implements ProjetRepository {
             System.out.println("Erreur lors de la recherche du projet par nom : " + e.getMessage());
         }
         return Optional.empty();
-    }
 
+
+   }
 }

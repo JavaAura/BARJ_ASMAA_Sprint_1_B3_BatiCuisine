@@ -53,7 +53,7 @@ public class ClientRepositoryImpl implements ClientRepository {
                     String telephone = resultSet.getString("telephone");
                     boolean estProfessionnel = resultSet.getBoolean("estProfessionnel");
                     Client client = new Client(nom, adresse, telephone, estProfessionnel);
-                    client.setId(id); // Assigner l'ID au client
+                    client.setId(id);
                     return client;
                 }
             }
